@@ -1,0 +1,5 @@
+*.json
+*~
+generator_utils.pyc
+obj_dir/
+__pycache__/
