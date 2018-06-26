@@ -2,32 +2,21 @@
 //Module: pullresistor defined externally
 
 
-module corebit_mux (
+module corebit_and (
   input in0,
   input in1,
-  input sel,
   output out
 );
-  assign out = sel ? in1 : in0;
+  assign out = in0 & in1;
 
-endmodule //corebit_mux
+endmodule //corebit_and
 
-module corebit_tribuf (
-  input in,
-  input en,
-  inout out
-);
-  assign out = en ? in : 1'bz;
-
-endmodule //corebit_tribuf
-
-module corebit_not (
-  input in,
+module corebit_const #(parameter value=1) (
   output out
 );
-  assign out = ~in;
+  assign out = value;
 
-endmodule //corebit_not
+endmodule //corebit_const
 
 module corebit_reg_arst #(parameter arst_posedge=1, parameter clk_posedge=1, parameter init=1) (
   input clk,
@@ -57,14 +46,78 @@ module corebit_concat (
 
 endmodule //corebit_concat
 
-module corebit_and (
+module corebit_wire (
+  input in,
+  output out
+);
+  assign out = in;
+
+endmodule //corebit_wire
+
+module corebit_xor (
   input in0,
   input in1,
   output out
 );
-  assign out = in0 & in1;
+  assign out = in0 ^ in1;
 
-endmodule //corebit_and
+endmodule //corebit_xor
+
+module corebit_mux (
+  input in0,
+  input in1,
+  input sel,
+  output out
+);
+  assign out = sel ? in1 : in0;
+
+endmodule //corebit_mux
+
+module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
+  input clk,
+  input in,
+  output out
+);
+reg outReg = init;
+always @(posedge clk) begin
+  outReg <= in;
+end
+assign out = outReg;
+
+endmodule //corebit_reg
+
+module coreir_not #(parameter width=1) (
+  input [width-1:0] in,
+  output [width-1:0] out
+);
+  assign out = ~in;
+
+endmodule //coreir_not
+
+module corebit_term (
+  input in
+);
+
+
+endmodule //corebit_term
+
+module coreir_mux #(parameter width=1) (
+  input [width-1:0] in0,
+  input [width-1:0] in1,
+  input sel,
+  output [width-1:0] out
+);
+  assign out = sel ? in1 : in0;
+
+endmodule //coreir_mux
+
+module corebit_ibuf (
+  inout in,
+  output out
+);
+  assign out = in;
+
+endmodule //corebit_ibuf
 
 module coreir_reg #(parameter clk_posedge=1, parameter init=1, parameter width=1) (
   input clk,
@@ -81,20 +134,40 @@ assign out = outReg;
 
 endmodule //coreir_reg
 
-module corebit_ibuf (
-  inout in,
+module corebit_not (
+  input in,
   output out
 );
-  assign out = in;
+  assign out = ~in;
 
-endmodule //corebit_ibuf
+endmodule //corebit_not
 
-module corebit_term (
-  input in
+module corebit_tribuf (
+  input in,
+  input en,
+  inout out
 );
+  assign out = en ? in : 1'bz;
 
+endmodule //corebit_tribuf
 
-endmodule //corebit_term
+module Invert1_wrapped (
+  input [0:0] I,
+  output [0:0] O
+);
+  //Wire declarations for instance 'inst0' (Module coreir_not)
+  wire [0:0] inst0__in;
+  wire [0:0] inst0__out;
+  coreir_not #(.width(1)) inst0(
+    .in(inst0__in),
+    .out(inst0__out)
+  );
+
+  //All the connections
+  assign inst0__in[0:0] = I[0:0];
+  assign O[0:0] = inst0__out[0:0];
+
+endmodule //Invert1_wrapped
 
 module corebit_or (
   input in0,
@@ -104,16 +177,6 @@ module corebit_or (
   assign out = in0 | in1;
 
 endmodule //corebit_or
-
-module coreir_mux #(parameter width=1) (
-  input [width-1:0] in0,
-  input [width-1:0] in1,
-  input sel,
-  output [width-1:0] out
-);
-  assign out = sel ? in1 : in0;
-
-endmodule //coreir_mux
 
 module _Mux2 (
   input [1:0] I,
@@ -139,69 +202,6 @@ module _Mux2 (
   assign inst0__sel = S;
 
 endmodule //_Mux2
-
-module corebit_wire (
-  input in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_wire
-
-module corebit_xor (
-  input in0,
-  input in1,
-  output out
-);
-  assign out = in0 ^ in1;
-
-endmodule //corebit_xor
-
-module corebit_const #(parameter value=1) (
-  output out
-);
-  assign out = value;
-
-endmodule //corebit_const
-
-module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
-  input clk,
-  input in,
-  output out
-);
-reg outReg = init;
-always @(posedge clk) begin
-  outReg <= in;
-end
-assign out = outReg;
-
-endmodule //corebit_reg
-
-module coreir_not #(parameter width=1) (
-  input [width-1:0] in,
-  output [width-1:0] out
-);
-  assign out = ~in;
-
-endmodule //coreir_not
-
-module Invert1_wrapped (
-  input [0:0] I,
-  output [0:0] O
-);
-  //Wire declarations for instance 'inst0' (Module coreir_not)
-  wire [0:0] inst0__in;
-  wire [0:0] inst0__out;
-  coreir_not #(.width(1)) inst0(
-    .in(inst0__in),
-    .out(inst0__out)
-  );
-
-  //All the connections
-  assign inst0__in[0:0] = I[0:0];
-  assign O[0:0] = inst0__out[0:0];
-
-endmodule //Invert1_wrapped
 
 module _Mux4 (
   input [3:0] I,
@@ -288,6 +288,8 @@ module _Mux8 (
   );
 
   //All the connections
+  assign inst0__I[0] = I[0];
+  assign inst0__I[1] = I[1];
   assign inst0__I[2] = I[2];
   assign inst0__I[3] = I[3];
   assign inst2__I[0] = inst0__O;
@@ -302,8 +304,6 @@ module _Mux8 (
   assign inst2__I[1] = inst1__O;
   assign O = inst2__O;
   assign inst2__S = S[2];
-  assign inst0__I[0] = I[0];
-  assign inst0__I[1] = I[1];
 
 endmodule //_Mux8
 
@@ -910,9 +910,9 @@ module Register32CER (
   assign inst30__CE = CE;
   assign inst31__CE = CE;
   assign inst4__CE = CE;
-  assign inst7__CE = CE;
   assign inst5__CE = CE;
   assign inst6__CE = CE;
+  assign inst7__CE = CE;
   assign inst8__CE = CE;
   assign inst9__CE = CE;
   assign inst0__CLK = CLK;
@@ -975,9 +975,9 @@ module Register32CER (
   assign inst3__RESET = RESET;
   assign inst30__RESET = RESET;
   assign inst31__RESET = RESET;
-  assign inst6__RESET = RESET;
   assign inst4__RESET = RESET;
   assign inst5__RESET = RESET;
+  assign inst6__RESET = RESET;
   assign inst7__RESET = RESET;
   assign inst8__RESET = RESET;
   assign inst9__RESET = RESET;
@@ -1031,12 +1031,12 @@ module Register32CER (
   assign O[30] = inst30__O;
   assign inst31__I = I[31];
   assign O[31] = inst31__O;
-  assign inst6__I = I[6];
-  assign O[6] = inst6__O;
   assign inst4__I = I[4];
   assign O[4] = inst4__O;
   assign inst5__I = I[5];
   assign O[5] = inst5__O;
+  assign inst6__I = I[6];
+  assign O[6] = inst6__O;
   assign inst7__I = I[7];
   assign O[7] = inst7__O;
   assign inst8__I = I[8];

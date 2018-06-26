@@ -2,29 +2,14 @@
 //Module: pullresistor defined externally
 
 
-module corebit_or (
+module corebit_concat (
   input in0,
   input in1,
-  output out
+  output [1:0] out
 );
-  assign out = in0 | in1;
+  assign out = {in0, in1};
 
-endmodule //corebit_or
-
-module corebit_const #(parameter value=1) (
-  output out
-);
-  assign out = value;
-
-endmodule //corebit_const
-
-module corebit_ibuf (
-  inout in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_ibuf
+endmodule //corebit_concat
 
 module corebit_and (
   input in0,
@@ -35,14 +20,50 @@ module corebit_and (
 
 endmodule //corebit_and
 
-module corebit_concat (
+module corebit_const #(parameter value=1) (
+  output out
+);
+  assign out = value;
+
+endmodule //corebit_const
+
+module corebit_term (
+  input in
+);
+
+
+endmodule //corebit_term
+
+module corebit_mux (
   input in0,
   input in1,
-  output [1:0] out
+  input sel,
+  output out
 );
-  assign out = {in0, in1};
+  assign out = sel ? in1 : in0;
 
-endmodule //corebit_concat
+endmodule //corebit_mux
+
+module corebit_not (
+  input in,
+  output out
+);
+  assign out = ~in;
+
+endmodule //corebit_not
+
+module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
+  input clk,
+  input in,
+  output out
+);
+reg outReg = init;
+always @(posedge clk) begin
+  outReg <= in;
+end
+assign out = outReg;
+
+endmodule //corebit_reg
 
 module corebit_reg_arst #(parameter arst_posedge=1, parameter clk_posedge=1, parameter init=1) (
   input clk,
@@ -63,13 +84,6 @@ assign out = outReg;
 
 endmodule //corebit_reg_arst
 
-module corebit_term (
-  input in
-);
-
-
-endmodule //corebit_term
-
 module corebit_tribuf (
   input in,
   input en,
@@ -78,6 +92,16 @@ module corebit_tribuf (
   assign out = en ? in : 1'bz;
 
 endmodule //corebit_tribuf
+
+module coreir_mux #(parameter width=1) (
+  input [width-1:0] in0,
+  input [width-1:0] in1,
+  input sel,
+  output [width-1:0] out
+);
+  assign out = sel ? in1 : in0;
+
+endmodule //coreir_mux
 
 module corebit_wire (
   input in,
@@ -96,25 +120,14 @@ module corebit_xor (
 
 endmodule //corebit_xor
 
-module coreir_mux #(parameter width=1) (
-  input [width-1:0] in0,
-  input [width-1:0] in1,
-  input sel,
-  output [width-1:0] out
-);
-  assign out = sel ? in1 : in0;
-
-endmodule //coreir_mux
-
-module corebit_mux (
+module corebit_or (
   input in0,
   input in1,
-  input sel,
   output out
 );
-  assign out = sel ? in1 : in0;
+  assign out = in0 | in1;
 
-endmodule //corebit_mux
+endmodule //corebit_or
 
 module coreir_not #(parameter width=1) (
   input [width-1:0] in,
@@ -123,24 +136,6 @@ module coreir_not #(parameter width=1) (
   assign out = ~in;
 
 endmodule //coreir_not
-
-module Invert1_wrapped (
-  input [0:0] I,
-  output [0:0] O
-);
-  //Wire declarations for instance 'inst0' (Module coreir_not)
-  wire [0:0] inst0__in;
-  wire [0:0] inst0__out;
-  coreir_not #(.width(1)) inst0(
-    .in(inst0__in),
-    .out(inst0__out)
-  );
-
-  //All the connections
-  assign inst0__in[0:0] = I[0:0];
-  assign O[0:0] = inst0__out[0:0];
-
-endmodule //Invert1_wrapped
 
 module coreir_reg #(parameter clk_posedge=1, parameter init=1, parameter width=1) (
   input clk,
@@ -157,13 +152,23 @@ assign out = outReg;
 
 endmodule //coreir_reg
 
-module corebit_not (
-  input in,
-  output out
+module Invert1_wrapped (
+  input [0:0] I,
+  output [0:0] O
 );
-  assign out = ~in;
+  //Wire declarations for instance 'inst0' (Module coreir_not)
+  wire [0:0] inst0__in;
+  wire [0:0] inst0__out;
+  coreir_not #(.width(1)) inst0(
+    .in(inst0__in),
+    .out(inst0__out)
+  );
 
-endmodule //corebit_not
+  //All the connections
+  assign O[0:0] = inst0__out[0:0];
+  assign inst0__in[0:0] = I[0:0];
+
+endmodule //Invert1_wrapped
 
 module _Mux2 (
   input [1:0] I,
@@ -267,18 +272,13 @@ module Mux4x1 (
 
 endmodule //Mux4x1
 
-module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
-  input clk,
-  input in,
+module corebit_ibuf (
+  inout in,
   output out
 );
-reg outReg = init;
-always @(posedge clk) begin
-  outReg <= in;
-end
-assign out = outReg;
+  assign out = in;
 
-endmodule //corebit_reg
+endmodule //corebit_ibuf
 
 module reg_U0 #(parameter init=1) (
   input  clk,
