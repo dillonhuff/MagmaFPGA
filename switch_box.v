@@ -2,15 +2,6 @@
 //Module: pullresistor defined externally
 
 
-module corebit_concat (
-  input in0,
-  input in1,
-  output [1:0] out
-);
-  assign out = {in0, in1};
-
-endmodule //corebit_concat
-
 module corebit_and (
   input in0,
   input in1,
@@ -20,12 +11,22 @@ module corebit_and (
 
 endmodule //corebit_and
 
-module corebit_const #(parameter value=1) (
+module corebit_wire (
+  input in,
   output out
 );
-  assign out = value;
+  assign out = in;
 
-endmodule //corebit_const
+endmodule //corebit_wire
+
+module corebit_tribuf (
+  input in,
+  input en,
+  inout out
+);
+  assign out = en ? in : 1'bz;
+
+endmodule //corebit_tribuf
 
 module corebit_term (
   input in
@@ -33,6 +34,13 @@ module corebit_term (
 
 
 endmodule //corebit_term
+
+module corebit_const #(parameter value=1) (
+  output out
+);
+  assign out = value;
+
+endmodule //corebit_const
 
 module corebit_mux (
   input in0,
@@ -52,6 +60,32 @@ module corebit_not (
 
 endmodule //corebit_not
 
+module coreir_not #(parameter width=1) (
+  input [width-1:0] in,
+  output [width-1:0] out
+);
+  assign out = ~in;
+
+endmodule //coreir_not
+
+module corebit_or (
+  input in0,
+  input in1,
+  output out
+);
+  assign out = in0 | in1;
+
+endmodule //corebit_or
+
+module corebit_xor (
+  input in0,
+  input in1,
+  output out
+);
+  assign out = in0 ^ in1;
+
+endmodule //corebit_xor
+
 module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
   input clk,
   input in,
@@ -64,6 +98,16 @@ end
 assign out = outReg;
 
 endmodule //corebit_reg
+
+module coreir_mux #(parameter width=1) (
+  input [width-1:0] in0,
+  input [width-1:0] in1,
+  input sel,
+  output [width-1:0] out
+);
+  assign out = sel ? in1 : in0;
+
+endmodule //coreir_mux
 
 module corebit_reg_arst #(parameter arst_posedge=1, parameter clk_posedge=1, parameter init=1) (
   input clk,
@@ -84,58 +128,32 @@ assign out = outReg;
 
 endmodule //corebit_reg_arst
 
-module corebit_tribuf (
-  input in,
-  input en,
-  inout out
-);
-  assign out = en ? in : 1'bz;
-
-endmodule //corebit_tribuf
-
-module coreir_mux #(parameter width=1) (
-  input [width-1:0] in0,
-  input [width-1:0] in1,
-  input sel,
-  output [width-1:0] out
-);
-  assign out = sel ? in1 : in0;
-
-endmodule //coreir_mux
-
-module corebit_wire (
-  input in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_wire
-
-module corebit_xor (
+module corebit_concat (
   input in0,
   input in1,
-  output out
+  output [1:0] out
 );
-  assign out = in0 ^ in1;
+  assign out = {in0, in1};
 
-endmodule //corebit_xor
+endmodule //corebit_concat
 
-module corebit_or (
-  input in0,
-  input in1,
-  output out
+module Invert1_wrapped (
+  input [0:0] I,
+  output [0:0] O
 );
-  assign out = in0 | in1;
+  //Wire declarations for instance 'inst0' (Module coreir_not)
+  wire [0:0] inst0__in;
+  wire [0:0] inst0__out;
+  coreir_not #(.width(1)) inst0(
+    .in(inst0__in),
+    .out(inst0__out)
+  );
 
-endmodule //corebit_or
+  //All the connections
+  assign inst0__in[0:0] = I[0:0];
+  assign O[0:0] = inst0__out[0:0];
 
-module coreir_not #(parameter width=1) (
-  input [width-1:0] in,
-  output [width-1:0] out
-);
-  assign out = ~in;
-
-endmodule //coreir_not
+endmodule //Invert1_wrapped
 
 module coreir_reg #(parameter clk_posedge=1, parameter init=1, parameter width=1) (
   input clk,
@@ -152,23 +170,43 @@ assign out = outReg;
 
 endmodule //coreir_reg
 
-module Invert1_wrapped (
-  input [0:0] I,
-  output [0:0] O
+module reg_U0 #(parameter init=1) (
+  input  clk,
+  input  en,
+  input [0:0] in,
+  output [0:0] out
 );
-  //Wire declarations for instance 'inst0' (Module coreir_not)
-  wire [0:0] inst0__in;
-  wire [0:0] inst0__out;
-  coreir_not #(.width(1)) inst0(
-    .in(inst0__in),
-    .out(inst0__out)
+  //Wire declarations for instance 'enMux' (Module coreir_mux)
+  wire [0:0] enMux__in0;
+  wire [0:0] enMux__in1;
+  wire [0:0] enMux__out;
+  wire  enMux__sel;
+  coreir_mux #(.width(1)) enMux(
+    .in0(enMux__in0),
+    .in1(enMux__in1),
+    .out(enMux__out),
+    .sel(enMux__sel)
+  );
+
+  //Wire declarations for instance 'reg0' (Module coreir_reg)
+  wire  reg0__clk;
+  wire [0:0] reg0__in;
+  wire [0:0] reg0__out;
+  coreir_reg #(.clk_posedge(1),.init(init),.width(1)) reg0(
+    .clk(reg0__clk),
+    .in(reg0__in),
+    .out(reg0__out)
   );
 
   //All the connections
-  assign O[0:0] = inst0__out[0:0];
-  assign inst0__in[0:0] = I[0:0];
+  assign out[0:0] = reg0__out[0:0];
+  assign enMux__in0[0:0] = reg0__out[0:0];
+  assign reg0__clk = clk;
+  assign reg0__in[0:0] = enMux__out[0:0];
+  assign enMux__sel = en;
+  assign enMux__in1[0:0] = in[0:0];
 
-endmodule //Invert1_wrapped
+endmodule //reg_U0
 
 module _Mux2 (
   input [1:0] I,
@@ -271,52 +309,6 @@ module Mux4x1 (
   assign inst0__S[1:0] = S[1:0];
 
 endmodule //Mux4x1
-
-module corebit_ibuf (
-  inout in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_ibuf
-
-module reg_U0 #(parameter init=1) (
-  input  clk,
-  input  en,
-  input [0:0] in,
-  output [0:0] out
-);
-  //Wire declarations for instance 'enMux' (Module coreir_mux)
-  wire [0:0] enMux__in0;
-  wire [0:0] enMux__in1;
-  wire [0:0] enMux__out;
-  wire  enMux__sel;
-  coreir_mux #(.width(1)) enMux(
-    .in0(enMux__in0),
-    .in1(enMux__in1),
-    .out(enMux__out),
-    .sel(enMux__sel)
-  );
-
-  //Wire declarations for instance 'reg0' (Module coreir_reg)
-  wire  reg0__clk;
-  wire [0:0] reg0__in;
-  wire [0:0] reg0__out;
-  coreir_reg #(.clk_posedge(1),.init(init),.width(1)) reg0(
-    .clk(reg0__clk),
-    .in(reg0__in),
-    .out(reg0__out)
-  );
-
-  //All the connections
-  assign out[0:0] = reg0__out[0:0];
-  assign enMux__in0[0:0] = reg0__out[0:0];
-  assign reg0__clk = clk;
-  assign reg0__in[0:0] = enMux__out[0:0];
-  assign enMux__sel = en;
-  assign enMux__in1[0:0] = in[0:0];
-
-endmodule //reg_U0
 
 module DFF_init0_has_ceTrue_has_resetTrue (
   input  CE,
@@ -1420,3 +1412,11 @@ module switch_box (
   assign side_1_track_3_out[0:0] = inst9__O[0:0];
 
 endmodule //switch_box
+
+module corebit_ibuf (
+  inout in,
+  output out
+);
+  assign out = in;
+
+endmodule //corebit_ibuf

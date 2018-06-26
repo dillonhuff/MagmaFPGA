@@ -2,22 +2,21 @@
 //Module: pullresistor defined externally
 
 
+module corebit_and (
+  input in0,
+  input in1,
+  output out
+);
+  assign out = in0 & in1;
+
+endmodule //corebit_and
+
 module corebit_const #(parameter value=1) (
   output out
 );
   assign out = value;
 
 endmodule //corebit_const
-
-module corebit_mux (
-  input in0,
-  input in1,
-  input sel,
-  output out
-);
-  assign out = sel ? in1 : in0;
-
-endmodule //corebit_mux
 
 module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
   input clk,
@@ -32,14 +31,30 @@ assign out = outReg;
 
 endmodule //corebit_reg
 
-module corebit_concat (
-  input in0,
-  input in1,
-  output [1:0] out
+module io1in_pad (
+  input  clk,
+  output  pin_0,
+  output  pin_1,
+  output  pin_2,
+  output  pin_3,
+  input  rst,
+  input [0:0] top_pin
 );
-  assign out = {in0, in1};
+  //All the connections
+  assign pin_0 = top_pin[0];
+  assign pin_1 = top_pin[0];
+  assign pin_2 = top_pin[0];
+  assign pin_3 = top_pin[0];
 
-endmodule //corebit_concat
+endmodule //io1in_pad
+
+module corebit_ibuf (
+  inout in,
+  output out
+);
+  assign out = in;
+
+endmodule //corebit_ibuf
 
 module corebit_xor (
   input in0,
@@ -49,6 +64,33 @@ module corebit_xor (
   assign out = in0 ^ in1;
 
 endmodule //corebit_xor
+
+module corebit_or (
+  input in0,
+  input in1,
+  output out
+);
+  assign out = in0 | in1;
+
+endmodule //corebit_or
+
+module corebit_mux (
+  input in0,
+  input in1,
+  input sel,
+  output out
+);
+  assign out = sel ? in1 : in0;
+
+endmodule //corebit_mux
+
+module corebit_not (
+  input in,
+  output out
+);
+  assign out = ~in;
+
+endmodule //corebit_not
 
 module corebit_reg_arst #(parameter arst_posedge=1, parameter clk_posedge=1, parameter init=1) (
   input clk,
@@ -69,55 +111,14 @@ assign out = outReg;
 
 endmodule //corebit_reg_arst
 
-module corebit_term (
-  input in
-);
-
-
-endmodule //corebit_term
-
-module corebit_not (
-  input in,
-  output out
-);
-  assign out = ~in;
-
-endmodule //corebit_not
-
-module corebit_or (
+module corebit_concat (
   input in0,
   input in1,
-  output out
+  output [1:0] out
 );
-  assign out = in0 | in1;
+  assign out = {in0, in1};
 
-endmodule //corebit_or
-
-module corebit_ibuf (
-  inout in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_ibuf
-
-module corebit_and (
-  input in0,
-  input in1,
-  output out
-);
-  assign out = in0 & in1;
-
-endmodule //corebit_and
-
-module corebit_tribuf (
-  input in,
-  input en,
-  inout out
-);
-  assign out = en ? in : 1'bz;
-
-endmodule //corebit_tribuf
+endmodule //corebit_concat
 
 module corebit_wire (
   input in,
@@ -127,19 +128,18 @@ module corebit_wire (
 
 endmodule //corebit_wire
 
-module io1in_pad (
-  input  clk,
-  output  pin_0,
-  output  pin_1,
-  output  pin_2,
-  output  pin_3,
-  input  rst,
-  input [0:0] top_pin
+module corebit_term (
+  input in
 );
-  //All the connections
-  assign pin_0 = top_pin[0];
-  assign pin_1 = top_pin[0];
-  assign pin_2 = top_pin[0];
-  assign pin_3 = top_pin[0];
 
-endmodule //io1in_pad
+
+endmodule //corebit_term
+
+module corebit_tribuf (
+  input in,
+  input en,
+  inout out
+);
+  assign out = en ? in : 1'bz;
+
+endmodule //corebit_tribuf
