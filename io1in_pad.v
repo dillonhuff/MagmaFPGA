@@ -11,23 +11,6 @@ module corebit_and (
 
 endmodule //corebit_and
 
-module corebit_wire (
-  input in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_wire
-
-module corebit_xor (
-  input in0,
-  input in1,
-  output out
-);
-  assign out = in0 ^ in1;
-
-endmodule //corebit_xor
-
 module corebit_concat (
   input in0,
   input in1,
@@ -36,55 +19,6 @@ module corebit_concat (
   assign out = {in0, in1};
 
 endmodule //corebit_concat
-
-module corebit_mux (
-  input in0,
-  input in1,
-  input sel,
-  output out
-);
-  assign out = sel ? in1 : in0;
-
-endmodule //corebit_mux
-
-module corebit_tribuf (
-  input in,
-  input en,
-  inout out
-);
-  assign out = en ? in : 1'bz;
-
-endmodule //corebit_tribuf
-
-module corebit_or (
-  input in0,
-  input in1,
-  output out
-);
-  assign out = in0 | in1;
-
-endmodule //corebit_or
-
-module corebit_not (
-  input in,
-  output out
-);
-  assign out = ~in;
-
-endmodule //corebit_not
-
-module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
-  input clk,
-  input in,
-  output out
-);
-reg outReg = init;
-always @(posedge clk) begin
-  outReg <= in;
-end
-assign out = outReg;
-
-endmodule //corebit_reg
 
 module corebit_ibuf (
   inout in,
@@ -113,6 +47,15 @@ assign out = outReg;
 
 endmodule //corebit_reg_arst
 
+module corebit_or (
+  input in0,
+  input in1,
+  output out
+);
+  assign out = in0 | in1;
+
+endmodule //corebit_or
+
 module corebit_const #(parameter value=1) (
   output out
 );
@@ -120,12 +63,26 @@ module corebit_const #(parameter value=1) (
 
 endmodule //corebit_const
 
-module corebit_term (
-  input in
+module corebit_not (
+  input in,
+  output out
 );
+  assign out = ~in;
 
+endmodule //corebit_not
 
-endmodule //corebit_term
+module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
+  input clk,
+  input in,
+  output out
+);
+reg outReg = init;
+always @(posedge clk) begin
+  outReg <= in;
+end
+assign out = outReg;
+
+endmodule //corebit_reg
 
 module io1in_pad (
   input  clk,
@@ -143,3 +100,46 @@ module io1in_pad (
   assign pin_3 = top_pin[0];
 
 endmodule //io1in_pad
+
+module corebit_term (
+  input in
+);
+
+
+endmodule //corebit_term
+
+module corebit_mux (
+  input in0,
+  input in1,
+  input sel,
+  output out
+);
+  assign out = sel ? in1 : in0;
+
+endmodule //corebit_mux
+
+module corebit_tribuf (
+  input in,
+  input en,
+  inout out
+);
+  assign out = en ? in : 1'bz;
+
+endmodule //corebit_tribuf
+
+module corebit_wire (
+  input in,
+  output out
+);
+  assign out = in;
+
+endmodule //corebit_wire
+
+module corebit_xor (
+  input in0,
+  input in1,
+  output out
+);
+  assign out = in0 ^ in1;
+
+endmodule //corebit_xor

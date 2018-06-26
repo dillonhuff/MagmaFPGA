@@ -2,15 +2,29 @@
 //Module: pullresistor defined externally
 
 
-module corebit_mux (
+module corebit_or (
   input in0,
   input in1,
-  input sel,
   output out
 );
-  assign out = sel ? in1 : in0;
+  assign out = in0 | in1;
 
-endmodule //corebit_mux
+endmodule //corebit_or
+
+module corebit_const #(parameter value=1) (
+  output out
+);
+  assign out = value;
+
+endmodule //corebit_const
+
+module corebit_ibuf (
+  inout in,
+  output out
+);
+  assign out = in;
+
+endmodule //corebit_ibuf
 
 module corebit_and (
   input in0,
@@ -20,6 +34,15 @@ module corebit_and (
   assign out = in0 & in1;
 
 endmodule //corebit_and
+
+module corebit_concat (
+  input in0,
+  input in1,
+  output [1:0] out
+);
+  assign out = {in0, in1};
+
+endmodule //corebit_concat
 
 module corebit_reg_arst #(parameter arst_posedge=1, parameter clk_posedge=1, parameter init=1) (
   input clk,
@@ -47,59 +70,6 @@ module corebit_term (
 
 endmodule //corebit_term
 
-module corebit_ibuf (
-  inout in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_ibuf
-
-module coreir_reg #(parameter clk_posedge=1, parameter init=1, parameter width=1) (
-  input clk,
-  input [width-1:0] in,
-  output [width-1:0] out
-);
-reg [width-1:0] outReg=init;
-wire real_clk;
-assign real_clk = clk_posedge ? clk : ~clk;
-always @(posedge real_clk) begin
-  outReg <= in;
-end
-assign out = outReg;
-
-endmodule //coreir_reg
-
-module corebit_or (
-  input in0,
-  input in1,
-  output out
-);
-  assign out = in0 | in1;
-
-endmodule //corebit_or
-
-module corebit_not (
-  input in,
-  output out
-);
-  assign out = ~in;
-
-endmodule //corebit_not
-
-module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
-  input clk,
-  input in,
-  output out
-);
-reg outReg = init;
-always @(posedge clk) begin
-  outReg <= in;
-end
-assign out = outReg;
-
-endmodule //corebit_reg
-
 module corebit_tribuf (
   input in,
   input en,
@@ -108,6 +78,14 @@ module corebit_tribuf (
   assign out = en ? in : 1'bz;
 
 endmodule //corebit_tribuf
+
+module corebit_wire (
+  input in,
+  output out
+);
+  assign out = in;
+
+endmodule //corebit_wire
 
 module corebit_xor (
   input in0,
@@ -118,14 +96,6 @@ module corebit_xor (
 
 endmodule //corebit_xor
 
-module corebit_wire (
-  input in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_wire
-
 module coreir_mux #(parameter width=1) (
   input [width-1:0] in0,
   input [width-1:0] in1,
@@ -135,6 +105,16 @@ module coreir_mux #(parameter width=1) (
   assign out = sel ? in1 : in0;
 
 endmodule //coreir_mux
+
+module corebit_mux (
+  input in0,
+  input in1,
+  input sel,
+  output out
+);
+  assign out = sel ? in1 : in0;
+
+endmodule //corebit_mux
 
 module coreir_not #(parameter width=1) (
   input [width-1:0] in,
@@ -162,21 +142,28 @@ module Invert1_wrapped (
 
 endmodule //Invert1_wrapped
 
-module corebit_concat (
-  input in0,
-  input in1,
-  output [1:0] out
+module coreir_reg #(parameter clk_posedge=1, parameter init=1, parameter width=1) (
+  input clk,
+  input [width-1:0] in,
+  output [width-1:0] out
 );
-  assign out = {in0, in1};
+reg [width-1:0] outReg=init;
+wire real_clk;
+assign real_clk = clk_posedge ? clk : ~clk;
+always @(posedge real_clk) begin
+  outReg <= in;
+end
+assign out = outReg;
 
-endmodule //corebit_concat
+endmodule //coreir_reg
 
-module corebit_const #(parameter value=1) (
+module corebit_not (
+  input in,
   output out
 );
-  assign out = value;
+  assign out = ~in;
 
-endmodule //corebit_const
+endmodule //corebit_not
 
 module _Mux2 (
   input [1:0] I,
@@ -279,6 +266,19 @@ module Mux4x1 (
   assign inst0__S[1:0] = S[1:0];
 
 endmodule //Mux4x1
+
+module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
+  input clk,
+  input in,
+  output out
+);
+reg outReg = init;
+always @(posedge clk) begin
+  outReg <= in;
+end
+assign out = outReg;
+
+endmodule //corebit_reg
 
 module reg_U0 #(parameter init=1) (
   input  clk,

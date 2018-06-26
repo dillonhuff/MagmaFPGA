@@ -11,13 +11,21 @@ module corebit_concat (
 
 endmodule //corebit_concat
 
-module corebit_not (
-  input in,
+module corebit_and (
+  input in0,
+  input in1,
   output out
 );
-  assign out = ~in;
+  assign out = in0 & in1;
 
-endmodule //corebit_not
+endmodule //corebit_and
+
+module corebit_const #(parameter value=1) (
+  output out
+);
+  assign out = value;
+
+endmodule //corebit_const
 
 module corebit_ibuf (
   inout in,
@@ -37,21 +45,86 @@ module corebit_mux (
 
 endmodule //corebit_mux
 
-module corebit_const #(parameter value=1) (
-  output out
+module corebit_term (
+  input in
 );
-  assign out = value;
 
-endmodule //corebit_const
 
-module corebit_and (
+endmodule //corebit_term
+
+module corebit_or (
   input in0,
   input in1,
   output out
 );
+  assign out = in0 | in1;
+
+endmodule //corebit_or
+
+module corebit_not (
+  input in,
+  output out
+);
+  assign out = ~in;
+
+endmodule //corebit_not
+
+module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
+  input clk,
+  input in,
+  output out
+);
+reg outReg = init;
+always @(posedge clk) begin
+  outReg <= in;
+end
+assign out = outReg;
+
+endmodule //corebit_reg
+
+module corebit_tribuf (
+  input in,
+  input en,
+  inout out
+);
+  assign out = en ? in : 1'bz;
+
+endmodule //corebit_tribuf
+
+module coreir_xor #(parameter width=1) (
+  input [width-1:0] in0,
+  input [width-1:0] in1,
+  output [width-1:0] out
+);
+  assign out = in0 ^ in1;
+
+endmodule //coreir_xor
+
+module corebit_wire (
+  input in,
+  output out
+);
+  assign out = in;
+
+endmodule //corebit_wire
+
+module corebit_xor (
+  input in0,
+  input in1,
+  output out
+);
+  assign out = in0 ^ in1;
+
+endmodule //corebit_xor
+
+module coreir_and #(parameter width=1) (
+  input [width-1:0] in0,
+  input [width-1:0] in1,
+  output [width-1:0] out
+);
   assign out = in0 & in1;
 
-endmodule //corebit_and
+endmodule //coreir_and
 
 module corebit_reg_arst #(parameter arst_posedge=1, parameter clk_posedge=1, parameter init=1) (
   input clk,
@@ -72,72 +145,6 @@ assign out = outReg;
 
 endmodule //corebit_reg_arst
 
-module corebit_tribuf (
-  input in,
-  input en,
-  inout out
-);
-  assign out = en ? in : 1'bz;
-
-endmodule //corebit_tribuf
-
-module coreir_and #(parameter width=1) (
-  input [width-1:0] in0,
-  input [width-1:0] in1,
-  output [width-1:0] out
-);
-  assign out = in0 & in1;
-
-endmodule //coreir_and
-
-module corebit_or (
-  input in0,
-  input in1,
-  output out
-);
-  assign out = in0 | in1;
-
-endmodule //corebit_or
-
-module corebit_wire (
-  input in,
-  output out
-);
-  assign out = in;
-
-endmodule //corebit_wire
-
-module coreir_or #(parameter width=1) (
-  input [width-1:0] in0,
-  input [width-1:0] in1,
-  output [width-1:0] out
-);
-  assign out = in0 | in1;
-
-endmodule //coreir_or
-
-module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
-  input clk,
-  input in,
-  output out
-);
-reg outReg = init;
-always @(posedge clk) begin
-  outReg <= in;
-end
-assign out = outReg;
-
-endmodule //corebit_reg
-
-module corebit_xor (
-  input in0,
-  input in1,
-  output out
-);
-  assign out = in0 ^ in1;
-
-endmodule //corebit_xor
-
 module coreir_eq #(parameter width=1) (
   input [width-1:0] in0,
   input [width-1:0] in1,
@@ -146,6 +153,28 @@ module coreir_eq #(parameter width=1) (
   assign out = in0 == in1;
 
 endmodule //coreir_eq
+
+module EQ16 (
+  input [15:0] I0,
+  input [15:0] I1,
+  output  O
+);
+  //Wire declarations for instance 'inst0' (Module coreir_eq)
+  wire [15:0] inst0__in0;
+  wire [15:0] inst0__in1;
+  wire  inst0__out;
+  coreir_eq #(.width(16)) inst0(
+    .in0(inst0__in0),
+    .in1(inst0__in1),
+    .out(inst0__out)
+  );
+
+  //All the connections
+  assign inst0__in0[15:0] = I0[15:0];
+  assign inst0__in1[15:0] = I1[15:0];
+  assign O = inst0__out;
+
+endmodule //EQ16
 
 module coreir_mux #(parameter width=1) (
   input [width-1:0] in0,
@@ -157,22 +186,27 @@ module coreir_mux #(parameter width=1) (
 
 endmodule //coreir_mux
 
-module coreir_xor #(parameter width=1) (
-  input [width-1:0] in0,
-  input [width-1:0] in1,
-  output [width-1:0] out
+module and1_wrapped (
+  input [0:0] I0,
+  input [0:0] I1,
+  output [0:0] O
 );
-  assign out = in0 ^ in1;
+  //Wire declarations for instance 'inst0' (Module coreir_and)
+  wire [0:0] inst0__in0;
+  wire [0:0] inst0__in1;
+  wire [0:0] inst0__out;
+  coreir_and #(.width(1)) inst0(
+    .in0(inst0__in0),
+    .in1(inst0__in1),
+    .out(inst0__out)
+  );
 
-endmodule //coreir_xor
+  //All the connections
+  assign inst0__in1[0:0] = I1[0:0];
+  assign O[0:0] = inst0__out[0:0];
+  assign inst0__in0[0:0] = I0[0:0];
 
-module coreir_not #(parameter width=1) (
-  input [width-1:0] in,
-  output [width-1:0] out
-);
-  assign out = ~in;
-
-endmodule //coreir_not
+endmodule //and1_wrapped
 
 module coreir_reg #(parameter clk_posedge=1, parameter init=1, parameter width=1) (
   input clk,
@@ -188,6 +222,278 @@ end
 assign out = outReg;
 
 endmodule //coreir_reg
+
+module coreir_not #(parameter width=1) (
+  input [width-1:0] in,
+  output [width-1:0] out
+);
+  assign out = ~in;
+
+endmodule //coreir_not
+
+module Invert1_wrapped (
+  input [0:0] I,
+  output [0:0] O
+);
+  //Wire declarations for instance 'inst0' (Module coreir_not)
+  wire [0:0] inst0__in;
+  wire [0:0] inst0__out;
+  coreir_not #(.width(1)) inst0(
+    .in(inst0__in),
+    .out(inst0__out)
+  );
+
+  //All the connections
+  assign inst0__in[0:0] = I[0:0];
+  assign O[0:0] = inst0__out[0:0];
+
+endmodule //Invert1_wrapped
+
+module coreir_or #(parameter width=1) (
+  input [width-1:0] in0,
+  input [width-1:0] in1,
+  output [width-1:0] out
+);
+  assign out = in0 | in1;
+
+endmodule //coreir_or
+
+module or1_wrapped (
+  input [0:0] I0,
+  input [0:0] I1,
+  output [0:0] O
+);
+  //Wire declarations for instance 'inst0' (Module coreir_or)
+  wire [0:0] inst0__in0;
+  wire [0:0] inst0__in1;
+  wire [0:0] inst0__out;
+  coreir_or #(.width(1)) inst0(
+    .in0(inst0__in0),
+    .in1(inst0__in1),
+    .out(inst0__out)
+  );
+
+  //All the connections
+  assign inst0__in0[0:0] = I0[0:0];
+  assign O[0:0] = inst0__out[0:0];
+  assign inst0__in1[0:0] = I1[0:0];
+
+endmodule //or1_wrapped
+
+module _Mux2 (
+  input [1:0] I,
+  output  O,
+  input  S
+);
+  //Wire declarations for instance 'inst0' (Module corebit_mux)
+  wire  inst0__in0;
+  wire  inst0__in1;
+  wire  inst0__out;
+  wire  inst0__sel;
+  corebit_mux inst0(
+    .in0(inst0__in0),
+    .in1(inst0__in1),
+    .out(inst0__out),
+    .sel(inst0__sel)
+  );
+
+  //All the connections
+  assign inst0__in0 = I[0];
+  assign inst0__in1 = I[1];
+  assign O = inst0__out;
+  assign inst0__sel = S;
+
+endmodule //_Mux2
+
+module _Mux4 (
+  input [3:0] I,
+  output  O,
+  input [1:0] S
+);
+  //Wire declarations for instance 'inst0' (Module _Mux2)
+  wire [1:0] inst0__I;
+  wire  inst0__O;
+  wire  inst0__S;
+  _Mux2 inst0(
+    .I(inst0__I),
+    .O(inst0__O),
+    .S(inst0__S)
+  );
+
+  //Wire declarations for instance 'inst1' (Module _Mux2)
+  wire [1:0] inst1__I;
+  wire  inst1__O;
+  wire  inst1__S;
+  _Mux2 inst1(
+    .I(inst1__I),
+    .O(inst1__O),
+    .S(inst1__S)
+  );
+
+  //Wire declarations for instance 'inst2' (Module _Mux2)
+  wire [1:0] inst2__I;
+  wire  inst2__O;
+  wire  inst2__S;
+  _Mux2 inst2(
+    .I(inst2__I),
+    .O(inst2__O),
+    .S(inst2__S)
+  );
+
+  //All the connections
+  assign inst0__I[0] = I[0];
+  assign inst0__I[1] = I[1];
+  assign inst2__I[0] = inst0__O;
+  assign inst0__S = S[0];
+  assign inst1__S = S[0];
+  assign inst1__I[0] = I[2];
+  assign inst1__I[1] = I[3];
+  assign inst2__I[1] = inst1__O;
+  assign O = inst2__O;
+  assign inst2__S = S[1];
+
+endmodule //_Mux4
+
+module Mux4x1 (
+  input [0:0] I0,
+  input [0:0] I1,
+  input [0:0] I2,
+  input [0:0] I3,
+  output [0:0] O,
+  input [1:0] S
+);
+  //Wire declarations for instance 'inst0' (Module _Mux4)
+  wire [3:0] inst0__I;
+  wire  inst0__O;
+  wire [1:0] inst0__S;
+  _Mux4 inst0(
+    .I(inst0__I),
+    .O(inst0__O),
+    .S(inst0__S)
+  );
+
+  //All the connections
+  assign inst0__I[0] = I0[0];
+  assign inst0__I[1] = I1[0];
+  assign inst0__I[2] = I2[0];
+  assign inst0__I[3] = I3[0];
+  assign O[0] = inst0__O;
+  assign inst0__S[1:0] = S[1:0];
+
+endmodule //Mux4x1
+
+module _Mux8 (
+  input [7:0] I,
+  output  O,
+  input [2:0] S
+);
+  //Wire declarations for instance 'inst0' (Module _Mux4)
+  wire [3:0] inst0__I;
+  wire  inst0__O;
+  wire [1:0] inst0__S;
+  _Mux4 inst0(
+    .I(inst0__I),
+    .O(inst0__O),
+    .S(inst0__S)
+  );
+
+  //Wire declarations for instance 'inst1' (Module _Mux4)
+  wire [3:0] inst1__I;
+  wire  inst1__O;
+  wire [1:0] inst1__S;
+  _Mux4 inst1(
+    .I(inst1__I),
+    .O(inst1__O),
+    .S(inst1__S)
+  );
+
+  //Wire declarations for instance 'inst2' (Module _Mux2)
+  wire [1:0] inst2__I;
+  wire  inst2__O;
+  wire  inst2__S;
+  _Mux2 inst2(
+    .I(inst2__I),
+    .O(inst2__O),
+    .S(inst2__S)
+  );
+
+  //All the connections
+  assign inst0__I[0] = I[0];
+  assign inst0__I[1] = I[1];
+  assign inst0__I[2] = I[2];
+  assign inst0__I[3] = I[3];
+  assign inst2__I[0] = inst0__O;
+  assign inst0__S[0] = S[0];
+  assign inst1__S[0] = S[0];
+  assign inst0__S[1] = S[1];
+  assign inst1__S[1] = S[1];
+  assign inst1__I[0] = I[4];
+  assign inst1__I[1] = I[5];
+  assign inst1__I[2] = I[6];
+  assign inst1__I[3] = I[7];
+  assign inst2__I[1] = inst1__O;
+  assign O = inst2__O;
+  assign inst2__S = S[2];
+
+endmodule //_Mux8
+
+module Mux8x1 (
+  input [0:0] I0,
+  input [0:0] I1,
+  input [0:0] I2,
+  input [0:0] I3,
+  input [0:0] I4,
+  input [0:0] I5,
+  input [0:0] I6,
+  input [0:0] I7,
+  output [0:0] O,
+  input [2:0] S
+);
+  //Wire declarations for instance 'inst0' (Module _Mux8)
+  wire [7:0] inst0__I;
+  wire  inst0__O;
+  wire [2:0] inst0__S;
+  _Mux8 inst0(
+    .I(inst0__I),
+    .O(inst0__O),
+    .S(inst0__S)
+  );
+
+  //All the connections
+  assign inst0__I[0] = I0[0];
+  assign inst0__I[1] = I1[0];
+  assign inst0__I[2] = I2[0];
+  assign inst0__I[3] = I3[0];
+  assign inst0__I[4] = I4[0];
+  assign inst0__I[5] = I5[0];
+  assign inst0__I[6] = I6[0];
+  assign inst0__I[7] = I7[0];
+  assign O[0] = inst0__O;
+  assign inst0__S[2:0] = S[2:0];
+
+endmodule //Mux8x1
+
+module xor1_wrapped (
+  input [0:0] I0,
+  input [0:0] I1,
+  output [0:0] O
+);
+  //Wire declarations for instance 'inst0' (Module coreir_xor)
+  wire [0:0] inst0__in0;
+  wire [0:0] inst0__in1;
+  wire [0:0] inst0__out;
+  coreir_xor #(.width(1)) inst0(
+    .in0(inst0__in0),
+    .in1(inst0__in1),
+    .out(inst0__out)
+  );
+
+  //All the connections
+  assign inst0__in0[0:0] = I0[0:0];
+  assign inst0__in1[0:0] = I1[0:0];
+  assign O[0:0] = inst0__out[0:0];
+
+endmodule //xor1_wrapped
 
 module reg_U0 #(parameter init=1) (
   input  clk,
@@ -226,122 +532,6 @@ module reg_U0 #(parameter init=1) (
   assign enMux__in1[0:0] = in[0:0];
 
 endmodule //reg_U0
-
-module and1_wrapped (
-  input [0:0] I0,
-  input [0:0] I1,
-  output [0:0] O
-);
-  //Wire declarations for instance 'inst0' (Module coreir_and)
-  wire [0:0] inst0__in0;
-  wire [0:0] inst0__in1;
-  wire [0:0] inst0__out;
-  coreir_and #(.width(1)) inst0(
-    .in0(inst0__in0),
-    .in1(inst0__in1),
-    .out(inst0__out)
-  );
-
-  //All the connections
-  assign O[0:0] = inst0__out[0:0];
-  assign inst0__in1[0:0] = I1[0:0];
-  assign inst0__in0[0:0] = I0[0:0];
-
-endmodule //and1_wrapped
-
-module EQ16 (
-  input [15:0] I0,
-  input [15:0] I1,
-  output  O
-);
-  //Wire declarations for instance 'inst0' (Module coreir_eq)
-  wire [15:0] inst0__in0;
-  wire [15:0] inst0__in1;
-  wire  inst0__out;
-  coreir_eq #(.width(16)) inst0(
-    .in0(inst0__in0),
-    .in1(inst0__in1),
-    .out(inst0__out)
-  );
-
-  //All the connections
-  assign inst0__in0[15:0] = I0[15:0];
-  assign inst0__in1[15:0] = I1[15:0];
-  assign O = inst0__out;
-
-endmodule //EQ16
-
-module corebit_term (
-  input in
-);
-
-
-endmodule //corebit_term
-
-module Invert1_wrapped (
-  input [0:0] I,
-  output [0:0] O
-);
-  //Wire declarations for instance 'inst0' (Module coreir_not)
-  wire [0:0] inst0__in;
-  wire [0:0] inst0__out;
-  coreir_not #(.width(1)) inst0(
-    .in(inst0__in),
-    .out(inst0__out)
-  );
-
-  //All the connections
-  assign inst0__in[0:0] = I[0:0];
-  assign O[0:0] = inst0__out[0:0];
-
-endmodule //Invert1_wrapped
-
-module xor1_wrapped (
-  input [0:0] I0,
-  input [0:0] I1,
-  output [0:0] O
-);
-  //Wire declarations for instance 'inst0' (Module coreir_xor)
-  wire [0:0] inst0__in0;
-  wire [0:0] inst0__in1;
-  wire [0:0] inst0__out;
-  coreir_xor #(.width(1)) inst0(
-    .in0(inst0__in0),
-    .in1(inst0__in1),
-    .out(inst0__out)
-  );
-
-  //All the connections
-  assign inst0__in0[0:0] = I0[0:0];
-  assign inst0__in1[0:0] = I1[0:0];
-  assign O[0:0] = inst0__out[0:0];
-
-endmodule //xor1_wrapped
-
-module _Mux2 (
-  input [1:0] I,
-  output  O,
-  input  S
-);
-  //Wire declarations for instance 'inst0' (Module corebit_mux)
-  wire  inst0__in0;
-  wire  inst0__in1;
-  wire  inst0__out;
-  wire  inst0__sel;
-  corebit_mux inst0(
-    .in0(inst0__in0),
-    .in1(inst0__in1),
-    .out(inst0__out),
-    .sel(inst0__sel)
-  );
-
-  //All the connections
-  assign inst0__in1 = I[1];
-  assign O = inst0__out;
-  assign inst0__sel = S;
-  assign inst0__in0 = I[0];
-
-endmodule //_Mux2
 
 module DFF_init0_has_ceTrue_has_resetTrue (
   input  CE,
@@ -1008,174 +1198,6 @@ module Register32CER (
 
 endmodule //Register32CER
 
-module _Mux4 (
-  input [3:0] I,
-  output  O,
-  input [1:0] S
-);
-  //Wire declarations for instance 'inst0' (Module _Mux2)
-  wire [1:0] inst0__I;
-  wire  inst0__O;
-  wire  inst0__S;
-  _Mux2 inst0(
-    .I(inst0__I),
-    .O(inst0__O),
-    .S(inst0__S)
-  );
-
-  //Wire declarations for instance 'inst1' (Module _Mux2)
-  wire [1:0] inst1__I;
-  wire  inst1__O;
-  wire  inst1__S;
-  _Mux2 inst1(
-    .I(inst1__I),
-    .O(inst1__O),
-    .S(inst1__S)
-  );
-
-  //Wire declarations for instance 'inst2' (Module _Mux2)
-  wire [1:0] inst2__I;
-  wire  inst2__O;
-  wire  inst2__S;
-  _Mux2 inst2(
-    .I(inst2__I),
-    .O(inst2__O),
-    .S(inst2__S)
-  );
-
-  //All the connections
-  assign inst0__I[0] = I[0];
-  assign inst0__I[1] = I[1];
-  assign inst2__I[0] = inst0__O;
-  assign inst0__S = S[0];
-  assign inst1__S = S[0];
-  assign inst1__I[0] = I[2];
-  assign inst1__I[1] = I[3];
-  assign inst2__I[1] = inst1__O;
-  assign O = inst2__O;
-  assign inst2__S = S[1];
-
-endmodule //_Mux4
-
-module Mux4x1 (
-  input [0:0] I0,
-  input [0:0] I1,
-  input [0:0] I2,
-  input [0:0] I3,
-  output [0:0] O,
-  input [1:0] S
-);
-  //Wire declarations for instance 'inst0' (Module _Mux4)
-  wire [3:0] inst0__I;
-  wire  inst0__O;
-  wire [1:0] inst0__S;
-  _Mux4 inst0(
-    .I(inst0__I),
-    .O(inst0__O),
-    .S(inst0__S)
-  );
-
-  //All the connections
-  assign inst0__I[0] = I0[0];
-  assign inst0__I[1] = I1[0];
-  assign inst0__I[2] = I2[0];
-  assign inst0__I[3] = I3[0];
-  assign O[0] = inst0__O;
-  assign inst0__S[1:0] = S[1:0];
-
-endmodule //Mux4x1
-
-module _Mux8 (
-  input [7:0] I,
-  output  O,
-  input [2:0] S
-);
-  //Wire declarations for instance 'inst0' (Module _Mux4)
-  wire [3:0] inst0__I;
-  wire  inst0__O;
-  wire [1:0] inst0__S;
-  _Mux4 inst0(
-    .I(inst0__I),
-    .O(inst0__O),
-    .S(inst0__S)
-  );
-
-  //Wire declarations for instance 'inst1' (Module _Mux4)
-  wire [3:0] inst1__I;
-  wire  inst1__O;
-  wire [1:0] inst1__S;
-  _Mux4 inst1(
-    .I(inst1__I),
-    .O(inst1__O),
-    .S(inst1__S)
-  );
-
-  //Wire declarations for instance 'inst2' (Module _Mux2)
-  wire [1:0] inst2__I;
-  wire  inst2__O;
-  wire  inst2__S;
-  _Mux2 inst2(
-    .I(inst2__I),
-    .O(inst2__O),
-    .S(inst2__S)
-  );
-
-  //All the connections
-  assign inst0__I[0] = I[0];
-  assign inst0__I[1] = I[1];
-  assign inst0__I[2] = I[2];
-  assign inst0__I[3] = I[3];
-  assign inst2__I[0] = inst0__O;
-  assign inst0__S[0] = S[0];
-  assign inst1__S[0] = S[0];
-  assign inst0__S[1] = S[1];
-  assign inst1__S[1] = S[1];
-  assign inst1__I[0] = I[4];
-  assign inst1__I[1] = I[5];
-  assign inst1__I[2] = I[6];
-  assign inst1__I[3] = I[7];
-  assign inst2__I[1] = inst1__O;
-  assign O = inst2__O;
-  assign inst2__S = S[2];
-
-endmodule //_Mux8
-
-module Mux8x1 (
-  input [0:0] I0,
-  input [0:0] I1,
-  input [0:0] I2,
-  input [0:0] I3,
-  input [0:0] I4,
-  input [0:0] I5,
-  input [0:0] I6,
-  input [0:0] I7,
-  output [0:0] O,
-  input [2:0] S
-);
-  //Wire declarations for instance 'inst0' (Module _Mux8)
-  wire [7:0] inst0__I;
-  wire  inst0__O;
-  wire [2:0] inst0__S;
-  _Mux8 inst0(
-    .I(inst0__I),
-    .O(inst0__O),
-    .S(inst0__S)
-  );
-
-  //All the connections
-  assign inst0__I[0] = I0[0];
-  assign inst0__I[1] = I1[0];
-  assign inst0__I[2] = I2[0];
-  assign inst0__I[3] = I3[0];
-  assign inst0__I[4] = I4[0];
-  assign inst0__I[5] = I5[0];
-  assign inst0__I[6] = I6[0];
-  assign inst0__I[7] = I7[0];
-  assign O[0] = inst0__O;
-  assign inst0__S[2:0] = S[2:0];
-
-endmodule //Mux8x1
-
 module connect_box (
   input  clk,
   input [31:0] config_data,
@@ -1257,28 +1279,6 @@ module connect_box (
   assign out[0:0] = inst2__O[0:0];
 
 endmodule //connect_box
-
-module or1_wrapped (
-  input [0:0] I0,
-  input [0:0] I1,
-  output [0:0] O
-);
-  //Wire declarations for instance 'inst0' (Module coreir_or)
-  wire [0:0] inst0__in0;
-  wire [0:0] inst0__in1;
-  wire [0:0] inst0__out;
-  coreir_or #(.width(1)) inst0(
-    .in0(inst0__in0),
-    .in1(inst0__in1),
-    .out(inst0__out)
-  );
-
-  //All the connections
-  assign inst0__in0[0:0] = I0[0:0];
-  assign O[0:0] = inst0__out[0:0];
-  assign inst0__in1[0:0] = I1[0:0];
-
-endmodule //or1_wrapped
 
 module configurable_logic_block (
   input  clk,
@@ -1728,11 +1728,11 @@ module switch_box (
   assign inst14__S[0] = inst0__O[24];
   assign inst14__S[1] = inst0__O[25];
   assign inst15__S[0] = inst0__O[26];
+  assign inst3__S[0] = inst0__O[2];
+  assign inst17__S[0] = inst0__O[30];
   assign inst15__S[1] = inst0__O[27];
   assign inst16__S[0] = inst0__O[28];
   assign inst16__S[1] = inst0__O[29];
-  assign inst3__S[0] = inst0__O[2];
-  assign inst17__S[0] = inst0__O[30];
   assign inst17__S[1] = inst0__O[31];
   assign inst3__S[1] = inst0__O[3];
   assign inst4__S[0] = inst0__O[4];
@@ -1754,13 +1754,13 @@ module switch_box (
   assign inst12__I2[0:0] = clb_result[0:0];
   assign inst13__I2[0:0] = clb_result[0:0];
   assign inst14__I3[0:0] = clb_result[0:0];
+  assign inst4__I0[0:0] = clb_result[0:0];
+  assign inst5__I0[0:0] = clb_result[0:0];
   assign inst15__I3[0:0] = clb_result[0:0];
   assign inst16__I3[0:0] = clb_result[0:0];
   assign inst17__I3[0:0] = clb_result[0:0];
   assign inst2__I0[0:0] = clb_result[0:0];
   assign inst3__I0[0:0] = clb_result[0:0];
-  assign inst4__I0[0:0] = clb_result[0:0];
-  assign inst5__I0[0:0] = clb_result[0:0];
   assign inst6__I1[0:0] = clb_result[0:0];
   assign inst7__I1[0:0] = clb_result[0:0];
   assign inst8__I1[0:0] = clb_result[0:0];
@@ -1783,8 +1783,8 @@ module switch_box (
   assign inst16__I0[0:0] = side_0_track_2_in[0:0];
   assign inst8__I0[0:0] = side_0_track_2_in[0:0];
   assign inst12__I1[0:0] = side_1_track_2_in[0:0];
-  assign inst16__I1[0:0] = side_1_track_2_in[0:0];
   assign inst4__I1[0:0] = side_1_track_2_in[0:0];
+  assign inst16__I1[0:0] = side_1_track_2_in[0:0];
   assign inst12__I3[0:0] = side_3_track_2_in[0:0];
   assign inst4__I3[0:0] = side_3_track_2_in[0:0];
   assign inst8__I3[0:0] = side_3_track_2_in[0:0];
@@ -1793,8 +1793,8 @@ module switch_box (
   assign inst17__I0[0:0] = side_0_track_3_in[0:0];
   assign inst9__I0[0:0] = side_0_track_3_in[0:0];
   assign inst13__I1[0:0] = side_1_track_3_in[0:0];
-  assign inst17__I1[0:0] = side_1_track_3_in[0:0];
   assign inst5__I1[0:0] = side_1_track_3_in[0:0];
+  assign inst17__I1[0:0] = side_1_track_3_in[0:0];
   assign inst13__I3[0:0] = side_3_track_3_in[0:0];
   assign inst5__I3[0:0] = side_3_track_3_in[0:0];
   assign inst9__I3[0:0] = side_3_track_3_in[0:0];
@@ -1803,21 +1803,21 @@ module switch_box (
   assign inst2__I2[0:0] = side_2_track_0_in[0:0];
   assign inst6__I2[0:0] = side_2_track_0_in[0:0];
   assign side_3_track_0_out[0:0] = inst14__O[0:0];
+  assign side_0_track_1_out[0:0] = inst3__O[0:0];
+  assign inst4__I2[0:0] = side_2_track_2_in[0:0];
+  assign side_0_track_2_out[0:0] = inst4__O[0:0];
+  assign inst5__I2[0:0] = side_2_track_3_in[0:0];
   assign inst15__I2[0:0] = side_2_track_1_in[0:0];
   assign inst3__I2[0:0] = side_2_track_1_in[0:0];
   assign inst7__I2[0:0] = side_2_track_1_in[0:0];
   assign side_3_track_1_out[0:0] = inst15__O[0:0];
   assign inst16__I2[0:0] = side_2_track_2_in[0:0];
-  assign inst4__I2[0:0] = side_2_track_2_in[0:0];
   assign inst8__I2[0:0] = side_2_track_2_in[0:0];
   assign side_3_track_2_out[0:0] = inst16__O[0:0];
   assign inst17__I2[0:0] = side_2_track_3_in[0:0];
-  assign inst5__I2[0:0] = side_2_track_3_in[0:0];
   assign inst9__I2[0:0] = side_2_track_3_in[0:0];
   assign side_3_track_3_out[0:0] = inst17__O[0:0];
   assign side_0_track_0_out[0:0] = inst2__O[0:0];
-  assign side_0_track_1_out[0:0] = inst3__O[0:0];
-  assign side_0_track_2_out[0:0] = inst4__O[0:0];
   assign side_0_track_3_out[0:0] = inst5__O[0:0];
   assign side_1_track_0_out[0:0] = inst6__O[0:0];
   assign side_1_track_1_out[0:0] = inst7__O[0:0];
@@ -2146,41 +2146,6 @@ module pe_tile (
   );
 
   //All the connections
-  assign inst4__I1[9] = config_addr[25];
-  assign inst8__I0[0] = inst4__O;
-  assign inst5__I1[0] = config_addr[16];
-  assign inst5__I1[10] = config_addr[26];
-  assign inst5__I1[11] = config_addr[27];
-  assign inst5__I1[12] = config_addr[28];
-  assign inst5__I1[13] = config_addr[29];
-  assign inst5__I1[14] = config_addr[30];
-  assign inst5__I1[15] = config_addr[31];
-  assign inst5__I1[1] = config_addr[17];
-  assign inst5__I1[2] = config_addr[18];
-  assign inst5__I1[3] = config_addr[19];
-  assign inst5__I1[4] = config_addr[20];
-  assign inst5__I1[5] = config_addr[21];
-  assign inst5__I1[6] = config_addr[22];
-  assign inst5__I1[7] = config_addr[23];
-  assign inst5__I1[8] = config_addr[24];
-  assign inst5__I1[9] = config_addr[25];
-  assign inst9__I0[0] = inst5__O;
-  assign inst6__I1[0] = config_addr[16];
-  assign inst6__I1[10] = config_addr[26];
-  assign inst6__I1[11] = config_addr[27];
-  assign inst6__I1[12] = config_addr[28];
-  assign inst6__I1[13] = config_addr[29];
-  assign inst6__I1[14] = config_addr[30];
-  assign inst6__I1[15] = config_addr[31];
-  assign inst6__I1[1] = config_addr[17];
-  assign inst6__I1[2] = config_addr[18];
-  assign inst6__I1[3] = config_addr[19];
-  assign inst6__I1[4] = config_addr[20];
-  assign inst6__I1[5] = config_addr[21];
-  assign inst6__I1[6] = config_addr[22];
-  assign inst6__I1[7] = config_addr[23];
-  assign inst6__I1[8] = config_addr[24];
-  assign inst6__I1[9] = config_addr[25];
   assign inst3__I0[0] = bit_const_GND__out;
   assign inst3__I0[10] = bit_const_GND__out;
   assign inst3__I0[11] = bit_const_GND__out;
@@ -2341,35 +2306,70 @@ module pe_tile (
   assign side_3_track_3_out[0:0] = inst14__side_3_track_3_out[0:0];
   assign inst3__I1[0] = config_addr[16];
   assign inst4__I1[0] = config_addr[16];
+  assign inst5__I1[0] = config_addr[16];
+  assign inst6__I1[0] = config_addr[16];
   assign inst3__I1[10] = config_addr[26];
   assign inst4__I1[10] = config_addr[26];
+  assign inst5__I1[10] = config_addr[26];
+  assign inst6__I1[10] = config_addr[26];
   assign inst3__I1[11] = config_addr[27];
   assign inst4__I1[11] = config_addr[27];
+  assign inst5__I1[11] = config_addr[27];
+  assign inst6__I1[11] = config_addr[27];
   assign inst3__I1[12] = config_addr[28];
   assign inst4__I1[12] = config_addr[28];
+  assign inst5__I1[12] = config_addr[28];
+  assign inst6__I1[12] = config_addr[28];
   assign inst3__I1[13] = config_addr[29];
   assign inst4__I1[13] = config_addr[29];
+  assign inst5__I1[13] = config_addr[29];
+  assign inst6__I1[13] = config_addr[29];
   assign inst3__I1[14] = config_addr[30];
   assign inst4__I1[14] = config_addr[30];
+  assign inst5__I1[14] = config_addr[30];
+  assign inst6__I1[14] = config_addr[30];
   assign inst3__I1[15] = config_addr[31];
   assign inst4__I1[15] = config_addr[31];
+  assign inst5__I1[15] = config_addr[31];
+  assign inst6__I1[15] = config_addr[31];
   assign inst3__I1[1] = config_addr[17];
   assign inst4__I1[1] = config_addr[17];
+  assign inst5__I1[1] = config_addr[17];
+  assign inst6__I1[1] = config_addr[17];
   assign inst3__I1[2] = config_addr[18];
   assign inst4__I1[2] = config_addr[18];
+  assign inst5__I1[2] = config_addr[18];
+  assign inst6__I1[2] = config_addr[18];
   assign inst3__I1[3] = config_addr[19];
   assign inst4__I1[3] = config_addr[19];
+  assign inst5__I1[3] = config_addr[19];
+  assign inst6__I1[3] = config_addr[19];
   assign inst3__I1[4] = config_addr[20];
   assign inst4__I1[4] = config_addr[20];
+  assign inst5__I1[4] = config_addr[20];
+  assign inst6__I1[4] = config_addr[20];
   assign inst3__I1[5] = config_addr[21];
   assign inst4__I1[5] = config_addr[21];
+  assign inst5__I1[5] = config_addr[21];
+  assign inst6__I1[5] = config_addr[21];
   assign inst3__I1[6] = config_addr[22];
   assign inst4__I1[6] = config_addr[22];
+  assign inst5__I1[6] = config_addr[22];
+  assign inst6__I1[6] = config_addr[22];
   assign inst3__I1[7] = config_addr[23];
   assign inst4__I1[7] = config_addr[23];
+  assign inst5__I1[7] = config_addr[23];
+  assign inst6__I1[7] = config_addr[23];
   assign inst3__I1[8] = config_addr[24];
   assign inst4__I1[8] = config_addr[24];
+  assign inst5__I1[8] = config_addr[24];
+  assign inst6__I1[8] = config_addr[24];
   assign inst3__I1[9] = config_addr[25];
+  assign inst4__I1[9] = config_addr[25];
+  assign inst5__I1[9] = config_addr[25];
+  assign inst6__I1[9] = config_addr[25];
   assign inst7__I0[0] = inst3__O;
+  assign inst8__I0[0] = inst4__O;
+  assign inst9__I0[0] = inst5__O;
 
 endmodule //pe_tile
