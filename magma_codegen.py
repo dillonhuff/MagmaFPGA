@@ -722,7 +722,7 @@ def create_pe_tile():
                          "side_3_track_2_in", m.In(m.Bits(1)),
                          "side_3_track_3_in", m.In(m.Bits(1)),
 
-                         "clb_result", m.In(m.Bits(1)),
+#                         "clb_result", m.In(m.Bits(1)),
 
                          "side_0_track_0_out", m.Out(m.Bits(1)),
                          "side_0_track_1_out", m.Out(m.Bits(1)),
@@ -989,7 +989,22 @@ def create_top(N):
                         m.wire(getattr(rit_pe, 'side_2_track_' + str(track) + '_in'), getattr(lef_pe, 'side_0_track_' + str(track) + '_out'))
                         m.wire(getattr(rit_pe, 'side_2_track_' + str(track) + '_out'), getattr(lef_pe, 'side_0_track_' + str(track) + '_in'))
 
+            # Wire side 0 of far right to constants
+            for row in range(0, N):
+                col = N - 1
+                rit_pe = tile_map['pe_tile_' + str(row) + '_' + str(col)]
 
+                for track in range(0, 4):
+                    m.wire(m.uint(1, 0), getattr(rit_pe, 'side_0_track_' + str(track) + '_in'))
+
+            # Wire side 1 of bottom to constants
+            for col in range(0, N):
+                row = N - 1
+                rit_pe = tile_map['pe_tile_' + str(row) + '_' + str(col)]
+
+                for track in range(0, 4):
+                    m.wire(m.uint(1, 0), getattr(rit_pe, 'side_1_track_' + str(track) + '_in'))
+                    
             for row in range(0, N):
                 lef_pe = tile_map['pe_tile_' + str(row) + '_' + str(0)]
                         

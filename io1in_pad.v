@@ -17,21 +17,67 @@ endmodule //corebit_and
 
 // End of module
 
-module corebit_xor (
+module corebit_concat (
 
   input in0,
 
   input in1,
 
+  output [1:0] out
+
+);
+
+  assign out = {in0, in1};
+
+
+
+endmodule //corebit_concat
+
+// End of module
+
+module corebit_ibuf (
+
+  inout in,
+
   output out
 
 );
 
-  assign out = in0 ^ in1;
+  assign out = in;
 
 
 
-endmodule //corebit_xor
+endmodule //corebit_ibuf
+
+// End of module
+
+module corebit_const #(parameter value=1) (
+
+  output out
+
+);
+
+  assign out = value;
+
+
+
+endmodule //corebit_const
+
+// End of module
+
+module corebit_not (
+
+  input in,
+
+  output out
+
+);
+
+  assign out = ~in;
+
+
+
+endmodule //corebit_not
 
 // End of module
 
@@ -55,38 +101,6 @@ endmodule //corebit_mux
 
 // End of module
 
-module corebit_term (
-
-  input in
-
-);
-
-
-
-
-
-endmodule //corebit_term
-
-// End of module
-
-module corebit_concat (
-
-  input in0,
-
-  input in1,
-
-  output [1:0] out
-
-);
-
-  assign out = {in0, in1};
-
-
-
-endmodule //corebit_concat
-
-// End of module
-
 module corebit_or (
 
   input in0,
@@ -102,130 +116,6 @@ module corebit_or (
 
 
 endmodule //corebit_or
-
-// End of module
-
-module corebit_tribuf (
-
-  input in,
-
-  input en,
-
-  inout out
-
-);
-
-  assign out = en ? in : 1'bz;
-
-
-
-endmodule //corebit_tribuf
-
-// End of module
-
-module corebit_const #(parameter value=1) (
-
-  output out
-
-);
-
-  assign out = value;
-
-
-
-endmodule //corebit_const
-
-// End of module
-
-module io1in_pad (
-
-  input  clk,
-
-  output  pin_0,
-
-  output  pin_1,
-
-  output  pin_2,
-
-  output  pin_3,
-
-  input  rst,
-
-  input [0:0] top_pin
-
-);
-
-  //All the connections
-
-  assign pin_0 = top_pin[0];
-
-  assign pin_1 = top_pin[0];
-
-  assign pin_2 = top_pin[0];
-
-  assign pin_3 = top_pin[0];
-
-
-
-endmodule //io1in_pad
-
-// End of module
-
-module corebit_ibuf (
-
-  inout in,
-
-  output out
-
-);
-
-  assign out = in;
-
-
-
-endmodule //corebit_ibuf
-
-// End of module
-
-module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
-
-  input clk,
-
-  input in,
-
-  output out
-
-);
-
-reg outReg = init;
-
-always @(posedge clk) begin
-
-  outReg <= in;
-
-end
-
-assign out = outReg;
-
-
-
-endmodule //corebit_reg
-
-// End of module
-
-module corebit_not (
-
-  input in,
-
-  output out
-
-);
-
-  assign out = ~in;
-
-
-
-endmodule //corebit_not
 
 // End of module
 
@@ -267,6 +157,64 @@ endmodule //corebit_reg_arst
 
 // End of module
 
+module corebit_reg #(parameter clk_posedge=1, parameter init=1) (
+
+  input clk,
+
+  input in,
+
+  output out
+
+);
+
+reg outReg = init;
+
+always @(posedge clk) begin
+
+  outReg <= in;
+
+end
+
+assign out = outReg;
+
+
+
+endmodule //corebit_reg
+
+// End of module
+
+module corebit_term (
+
+  input in
+
+);
+
+
+
+
+
+endmodule //corebit_term
+
+// End of module
+
+module corebit_tribuf (
+
+  input in,
+
+  input en,
+
+  inout out
+
+);
+
+  assign out = en ? in : 1'bz;
+
+
+
+endmodule //corebit_tribuf
+
+// End of module
+
 module corebit_wire (
 
   input in,
@@ -280,6 +228,58 @@ module corebit_wire (
 
 
 endmodule //corebit_wire
+
+// End of module
+
+module corebit_xor (
+
+  input in0,
+
+  input in1,
+
+  output out
+
+);
+
+  assign out = in0 ^ in1;
+
+
+
+endmodule //corebit_xor
+
+// End of module
+
+module io1in_pad (
+
+  input  clk,
+
+  output  pin_0,
+
+  output  pin_1,
+
+  output  pin_2,
+
+  output  pin_3,
+
+  input  rst,
+
+  input [0:0] top_pin
+
+);
+
+  //All the connections
+
+  assign pin_0 = top_pin[0];
+
+  assign pin_1 = top_pin[0];
+
+  assign pin_2 = top_pin[0];
+
+  assign pin_3 = top_pin[0];
+
+
+
+endmodule //io1in_pad
 
 // End of module
 

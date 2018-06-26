@@ -17,47 +17,21 @@ endmodule //coreir_and
 
 // End of module
 
-module and1_wrapped (
+module coreir_xor #(parameter width=1) (
 
-  input [0:0] I0,
+  input [width-1:0] in0,
 
-  input [0:0] I1,
+  input [width-1:0] in1,
 
-  output [0:0] O
+  output [width-1:0] out
 
 );
 
-  //Wire declarations for instance 'inst0' (Module coreir_and)
-
-  wire [0:0] inst0__in0;
-
-  wire [0:0] inst0__in1;
-
-  wire [0:0] inst0__out;
-
-  coreir_and #(.width(1)) inst0(
-
-    .in0(inst0__in0),
-
-    .in1(inst0__in1),
-
-    .out(inst0__out)
-
-  );
+  assign out = in0 ^ in1;
 
 
 
-  //All the connections
-
-  assign inst0__in1[0:0] = I1[0:0];
-
-  assign inst0__in0[0:0] = I0[0:0];
-
-  assign O[0:0] = inst0__out[0:0];
-
-
-
-endmodule //and1_wrapped
+endmodule //coreir_xor
 
 // End of module
 
@@ -111,9 +85,9 @@ module or1_wrapped (
 
   //All the connections
 
-  assign inst0__in0[0:0] = I0[0:0];
-
   assign inst0__in1[0:0] = I1[0:0];
+
+  assign inst0__in0[0:0] = I0[0:0];
 
   assign O[0:0] = inst0__out[0:0];
 
@@ -123,21 +97,47 @@ endmodule //or1_wrapped
 
 // End of module
 
-module coreir_xor #(parameter width=1) (
+module xor1_wrapped (
 
-  input [width-1:0] in0,
+  input [0:0] I0,
 
-  input [width-1:0] in1,
+  input [0:0] I1,
 
-  output [width-1:0] out
+  output [0:0] O
 
 );
 
-  assign out = in0 ^ in1;
+  //Wire declarations for instance 'inst0' (Module coreir_xor)
+
+  wire [0:0] inst0__in0;
+
+  wire [0:0] inst0__in1;
+
+  wire [0:0] inst0__out;
+
+  coreir_xor #(.width(1)) inst0(
+
+    .in0(inst0__in0),
+
+    .in1(inst0__in1),
+
+    .out(inst0__out)
+
+  );
 
 
 
-endmodule //coreir_xor
+  //All the connections
+
+  assign inst0__in0[0:0] = I0[0:0];
+
+  assign inst0__in1[0:0] = I1[0:0];
+
+  assign O[0:0] = inst0__out[0:0];
+
+
+
+endmodule //xor1_wrapped
 
 // End of module
 
@@ -323,7 +323,171 @@ endmodule //Mux8x1
 
 // End of module
 
-module xor1_wrapped (
+module connect_box (
+
+  input  clk,
+
+  input [31:0] config_data,
+
+  input  config_en,
+
+  output [0:0] out,
+
+  input  rst,
+
+  input  track_0_in,
+
+  input  track_0_out,
+
+  input  track_1_in,
+
+  input  track_1_out,
+
+  input  track_2_in,
+
+  input  track_2_out,
+
+  input  track_3_in,
+
+  input  track_3_out
+
+);
+
+  //Wire declarations for instance 'inst0' (Module Register32CER)
+
+  wire  inst0__CE;
+
+  wire  inst0__CLK;
+
+  wire [31:0] inst0__I;
+
+  wire [31:0] inst0__O;
+
+  wire  inst0__RESET;
+
+  Register32CER inst0(
+
+    .CE(inst0__CE),
+
+    .CLK(inst0__CLK),
+
+    .I(inst0__I),
+
+    .O(inst0__O),
+
+    .RESET(inst0__RESET)
+
+  );
+
+
+
+  //Wire declarations for instance 'inst1' (Module Invert1_wrapped)
+
+  wire [0:0] inst1__I;
+
+  wire [0:0] inst1__O;
+
+  Invert1_wrapped inst1(
+
+    .I(inst1__I),
+
+    .O(inst1__O)
+
+  );
+
+
+
+  //Wire declarations for instance 'inst2' (Module Mux8x1)
+
+  wire [0:0] inst2__I0;
+
+  wire [0:0] inst2__I1;
+
+  wire [0:0] inst2__I2;
+
+  wire [0:0] inst2__I3;
+
+  wire [0:0] inst2__I4;
+
+  wire [0:0] inst2__I5;
+
+  wire [0:0] inst2__I6;
+
+  wire [0:0] inst2__I7;
+
+  wire [0:0] inst2__O;
+
+  wire [2:0] inst2__S;
+
+  Mux8x1 inst2(
+
+    .I0(inst2__I0),
+
+    .I1(inst2__I1),
+
+    .I2(inst2__I2),
+
+    .I3(inst2__I3),
+
+    .I4(inst2__I4),
+
+    .I5(inst2__I5),
+
+    .I6(inst2__I6),
+
+    .I7(inst2__I7),
+
+    .O(inst2__O),
+
+    .S(inst2__S)
+
+  );
+
+
+
+  //All the connections
+
+  assign inst0__CE = config_en;
+
+  assign inst0__CLK = clk;
+
+  assign inst0__I[31:0] = config_data[31:0];
+
+  assign inst2__S[0] = inst0__O[0];
+
+  assign inst2__S[1] = inst0__O[1];
+
+  assign inst2__S[2] = inst0__O[2];
+
+  assign inst0__RESET = inst1__O[0];
+
+  assign inst1__I[0] = rst;
+
+  assign inst2__I0[0] = track_0_in;
+
+  assign inst2__I1[0] = track_1_in;
+
+  assign inst2__I2[0] = track_2_in;
+
+  assign inst2__I3[0] = track_3_in;
+
+  assign inst2__I4[0] = track_0_out;
+
+  assign inst2__I5[0] = track_1_out;
+
+  assign inst2__I6[0] = track_2_out;
+
+  assign inst2__I7[0] = track_3_out;
+
+  assign out[0:0] = inst2__O[0:0];
+
+
+
+endmodule //connect_box
+
+// End of module
+
+module and1_wrapped (
 
   input [0:0] I0,
 
@@ -333,7 +497,7 @@ module xor1_wrapped (
 
 );
 
-  //Wire declarations for instance 'inst0' (Module coreir_xor)
+  //Wire declarations for instance 'inst0' (Module coreir_and)
 
   wire [0:0] inst0__in0;
 
@@ -341,7 +505,7 @@ module xor1_wrapped (
 
   wire [0:0] inst0__out;
 
-  coreir_xor #(.width(1)) inst0(
+  coreir_and #(.width(1)) inst0(
 
     .in0(inst0__in0),
 
@@ -355,15 +519,231 @@ module xor1_wrapped (
 
   //All the connections
 
+  assign O[0:0] = inst0__out[0:0];
+
   assign inst0__in0[0:0] = I0[0:0];
 
   assign inst0__in1[0:0] = I1[0:0];
 
-  assign O[0:0] = inst0__out[0:0];
+
+
+endmodule //and1_wrapped
+
+// End of module
+
+module configurable_logic_block (
+
+  input  clk,
+
+  input [31:0] config_data,
+
+  input  config_en,
+
+  input [0:0] operand0,
+
+  input [0:0] operand1,
+
+  output [0:0] result,
+
+  input  rst
+
+);
+
+  //Wire declarations for instance 'inst0' (Module Register32CER)
+
+  wire  inst0__CE;
+
+  wire  inst0__CLK;
+
+  wire [31:0] inst0__I;
+
+  wire [31:0] inst0__O;
+
+  wire  inst0__RESET;
+
+  Register32CER inst0(
+
+    .CE(inst0__CE),
+
+    .CLK(inst0__CLK),
+
+    .I(inst0__I),
+
+    .O(inst0__O),
+
+    .RESET(inst0__RESET)
+
+  );
 
 
 
-endmodule //xor1_wrapped
+  //Wire declarations for instance 'inst1' (Module Invert1_wrapped)
+
+  wire [0:0] inst1__I;
+
+  wire [0:0] inst1__O;
+
+  Invert1_wrapped inst1(
+
+    .I(inst1__I),
+
+    .O(inst1__O)
+
+  );
+
+
+
+  //Wire declarations for instance 'inst2' (Module and1_wrapped)
+
+  wire [0:0] inst2__I0;
+
+  wire [0:0] inst2__I1;
+
+  wire [0:0] inst2__O;
+
+  and1_wrapped inst2(
+
+    .I0(inst2__I0),
+
+    .I1(inst2__I1),
+
+    .O(inst2__O)
+
+  );
+
+
+
+  //Wire declarations for instance 'inst3' (Module or1_wrapped)
+
+  wire [0:0] inst3__I0;
+
+  wire [0:0] inst3__I1;
+
+  wire [0:0] inst3__O;
+
+  or1_wrapped inst3(
+
+    .I0(inst3__I0),
+
+    .I1(inst3__I1),
+
+    .O(inst3__O)
+
+  );
+
+
+
+  //Wire declarations for instance 'inst4' (Module xor1_wrapped)
+
+  wire [0:0] inst4__I0;
+
+  wire [0:0] inst4__I1;
+
+  wire [0:0] inst4__O;
+
+  xor1_wrapped inst4(
+
+    .I0(inst4__I0),
+
+    .I1(inst4__I1),
+
+    .O(inst4__O)
+
+  );
+
+
+
+  //Wire declarations for instance 'inst5' (Module Invert1_wrapped)
+
+  wire [0:0] inst5__I;
+
+  wire [0:0] inst5__O;
+
+  Invert1_wrapped inst5(
+
+    .I(inst5__I),
+
+    .O(inst5__O)
+
+  );
+
+
+
+  //Wire declarations for instance 'inst6' (Module Mux4x1)
+
+  wire [0:0] inst6__I0;
+
+  wire [0:0] inst6__I1;
+
+  wire [0:0] inst6__I2;
+
+  wire [0:0] inst6__I3;
+
+  wire [0:0] inst6__O;
+
+  wire [1:0] inst6__S;
+
+  Mux4x1 inst6(
+
+    .I0(inst6__I0),
+
+    .I1(inst6__I1),
+
+    .I2(inst6__I2),
+
+    .I3(inst6__I3),
+
+    .O(inst6__O),
+
+    .S(inst6__S)
+
+  );
+
+
+
+  //All the connections
+
+  assign inst0__CE = config_en;
+
+  assign inst0__CLK = clk;
+
+  assign inst0__I[31:0] = config_data[31:0];
+
+  assign inst6__S[0] = inst0__O[0];
+
+  assign inst6__S[1] = inst0__O[1];
+
+  assign inst0__RESET = inst1__O[0];
+
+  assign inst1__I[0] = rst;
+
+  assign inst2__I0[0:0] = operand0[0:0];
+
+  assign inst3__I0[0:0] = operand0[0:0];
+
+  assign inst4__I0[0:0] = operand0[0:0];
+
+  assign inst5__I[0:0] = operand0[0:0];
+
+  assign inst2__I1[0:0] = operand1[0:0];
+
+  assign inst3__I1[0:0] = operand1[0:0];
+
+  assign inst4__I1[0:0] = operand1[0:0];
+
+  assign inst6__I0[0:0] = inst2__O[0:0];
+
+  assign inst6__I1[0:0] = inst3__O[0:0];
+
+  assign inst6__I2[0:0] = inst4__O[0:0];
+
+  assign inst6__I3[0:0] = inst5__O[0:0];
+
+  assign result[0:0] = inst6__O[0:0];
+
+
+
+endmodule //configurable_logic_block
 
 // End of module
 
@@ -1243,386 +1623,6 @@ endmodule //switch_box
 
 // End of module
 
-module connect_box (
-
-  input  clk,
-
-  input [31:0] config_data,
-
-  input  config_en,
-
-  output [0:0] out,
-
-  input  rst,
-
-  input  track_0_in,
-
-  input  track_0_out,
-
-  input  track_1_in,
-
-  input  track_1_out,
-
-  input  track_2_in,
-
-  input  track_2_out,
-
-  input  track_3_in,
-
-  input  track_3_out
-
-);
-
-  //Wire declarations for instance 'inst0' (Module Register32CER)
-
-  wire  inst0__CE;
-
-  wire  inst0__CLK;
-
-  wire [31:0] inst0__I;
-
-  wire [31:0] inst0__O;
-
-  wire  inst0__RESET;
-
-  Register32CER inst0(
-
-    .CE(inst0__CE),
-
-    .CLK(inst0__CLK),
-
-    .I(inst0__I),
-
-    .O(inst0__O),
-
-    .RESET(inst0__RESET)
-
-  );
-
-
-
-  //Wire declarations for instance 'inst1' (Module Invert1_wrapped)
-
-  wire [0:0] inst1__I;
-
-  wire [0:0] inst1__O;
-
-  Invert1_wrapped inst1(
-
-    .I(inst1__I),
-
-    .O(inst1__O)
-
-  );
-
-
-
-  //Wire declarations for instance 'inst2' (Module Mux8x1)
-
-  wire [0:0] inst2__I0;
-
-  wire [0:0] inst2__I1;
-
-  wire [0:0] inst2__I2;
-
-  wire [0:0] inst2__I3;
-
-  wire [0:0] inst2__I4;
-
-  wire [0:0] inst2__I5;
-
-  wire [0:0] inst2__I6;
-
-  wire [0:0] inst2__I7;
-
-  wire [0:0] inst2__O;
-
-  wire [2:0] inst2__S;
-
-  Mux8x1 inst2(
-
-    .I0(inst2__I0),
-
-    .I1(inst2__I1),
-
-    .I2(inst2__I2),
-
-    .I3(inst2__I3),
-
-    .I4(inst2__I4),
-
-    .I5(inst2__I5),
-
-    .I6(inst2__I6),
-
-    .I7(inst2__I7),
-
-    .O(inst2__O),
-
-    .S(inst2__S)
-
-  );
-
-
-
-  //All the connections
-
-  assign inst0__CE = config_en;
-
-  assign inst0__CLK = clk;
-
-  assign inst0__I[31:0] = config_data[31:0];
-
-  assign inst2__S[0] = inst0__O[0];
-
-  assign inst2__S[1] = inst0__O[1];
-
-  assign inst2__S[2] = inst0__O[2];
-
-  assign inst0__RESET = inst1__O[0];
-
-  assign inst1__I[0] = rst;
-
-  assign inst2__I0[0] = track_0_in;
-
-  assign inst2__I1[0] = track_1_in;
-
-  assign inst2__I2[0] = track_2_in;
-
-  assign inst2__I3[0] = track_3_in;
-
-  assign inst2__I4[0] = track_0_out;
-
-  assign inst2__I5[0] = track_1_out;
-
-  assign inst2__I6[0] = track_2_out;
-
-  assign inst2__I7[0] = track_3_out;
-
-  assign out[0:0] = inst2__O[0:0];
-
-
-
-endmodule //connect_box
-
-// End of module
-
-module configurable_logic_block (
-
-  input  clk,
-
-  input [31:0] config_data,
-
-  input  config_en,
-
-  input [0:0] operand0,
-
-  input [0:0] operand1,
-
-  output [0:0] result,
-
-  input  rst
-
-);
-
-  //Wire declarations for instance 'inst0' (Module Register32CER)
-
-  wire  inst0__CE;
-
-  wire  inst0__CLK;
-
-  wire [31:0] inst0__I;
-
-  wire [31:0] inst0__O;
-
-  wire  inst0__RESET;
-
-  Register32CER inst0(
-
-    .CE(inst0__CE),
-
-    .CLK(inst0__CLK),
-
-    .I(inst0__I),
-
-    .O(inst0__O),
-
-    .RESET(inst0__RESET)
-
-  );
-
-
-
-  //Wire declarations for instance 'inst1' (Module Invert1_wrapped)
-
-  wire [0:0] inst1__I;
-
-  wire [0:0] inst1__O;
-
-  Invert1_wrapped inst1(
-
-    .I(inst1__I),
-
-    .O(inst1__O)
-
-  );
-
-
-
-  //Wire declarations for instance 'inst2' (Module and1_wrapped)
-
-  wire [0:0] inst2__I0;
-
-  wire [0:0] inst2__I1;
-
-  wire [0:0] inst2__O;
-
-  and1_wrapped inst2(
-
-    .I0(inst2__I0),
-
-    .I1(inst2__I1),
-
-    .O(inst2__O)
-
-  );
-
-
-
-  //Wire declarations for instance 'inst3' (Module or1_wrapped)
-
-  wire [0:0] inst3__I0;
-
-  wire [0:0] inst3__I1;
-
-  wire [0:0] inst3__O;
-
-  or1_wrapped inst3(
-
-    .I0(inst3__I0),
-
-    .I1(inst3__I1),
-
-    .O(inst3__O)
-
-  );
-
-
-
-  //Wire declarations for instance 'inst4' (Module xor1_wrapped)
-
-  wire [0:0] inst4__I0;
-
-  wire [0:0] inst4__I1;
-
-  wire [0:0] inst4__O;
-
-  xor1_wrapped inst4(
-
-    .I0(inst4__I0),
-
-    .I1(inst4__I1),
-
-    .O(inst4__O)
-
-  );
-
-
-
-  //Wire declarations for instance 'inst5' (Module Invert1_wrapped)
-
-  wire [0:0] inst5__I;
-
-  wire [0:0] inst5__O;
-
-  Invert1_wrapped inst5(
-
-    .I(inst5__I),
-
-    .O(inst5__O)
-
-  );
-
-
-
-  //Wire declarations for instance 'inst6' (Module Mux4x1)
-
-  wire [0:0] inst6__I0;
-
-  wire [0:0] inst6__I1;
-
-  wire [0:0] inst6__I2;
-
-  wire [0:0] inst6__I3;
-
-  wire [0:0] inst6__O;
-
-  wire [1:0] inst6__S;
-
-  Mux4x1 inst6(
-
-    .I0(inst6__I0),
-
-    .I1(inst6__I1),
-
-    .I2(inst6__I2),
-
-    .I3(inst6__I3),
-
-    .O(inst6__O),
-
-    .S(inst6__S)
-
-  );
-
-
-
-  //All the connections
-
-  assign inst0__CE = config_en;
-
-  assign inst0__CLK = clk;
-
-  assign inst0__I[31:0] = config_data[31:0];
-
-  assign inst6__S[0] = inst0__O[0];
-
-  assign inst6__S[1] = inst0__O[1];
-
-  assign inst0__RESET = inst1__O[0];
-
-  assign inst1__I[0] = rst;
-
-  assign inst2__I0[0:0] = operand0[0:0];
-
-  assign inst3__I0[0:0] = operand0[0:0];
-
-  assign inst4__I0[0:0] = operand0[0:0];
-
-  assign inst5__I[0:0] = operand0[0:0];
-
-  assign inst2__I1[0:0] = operand1[0:0];
-
-  assign inst3__I1[0:0] = operand1[0:0];
-
-  assign inst4__I1[0:0] = operand1[0:0];
-
-  assign inst6__I0[0:0] = inst2__O[0:0];
-
-  assign inst6__I1[0:0] = inst3__O[0:0];
-
-  assign inst6__I2[0:0] = inst4__O[0:0];
-
-  assign inst6__I3[0:0] = inst5__O[0:0];
-
-  assign result[0:0] = inst6__O[0:0];
-
-
-
-endmodule //configurable_logic_block
-
-// End of module
-
 module pe_tile (
 
   input [0:0] clb_result,
@@ -2445,141 +2445,7 @@ module pe_tile (
 
   assign inst1__I0[3] = config_addr[3];
 
-  assign inst1__I0[4] = config_addr[4];
-
-  assign inst1__I0[5] = config_addr[5];
-
-  assign inst1__I0[6] = config_addr[6];
-
-  assign inst1__I0[7] = config_addr[7];
-
-  assign inst1__I0[8] = config_addr[8];
-
-  assign inst1__I0[9] = config_addr[9];
-
-  assign inst1__I1[15:0] = tile_id[15:0];
-
-  assign inst10__I0[0] = inst6__O;
-
-  assign inst14__config_en = inst10__O[0];
-
-  assign inst11__config_en = inst7__O[0];
-
-  assign inst13__operand0[0:0] = inst11__out[0:0];
-
-  assign inst11__rst = rst;
-
-  assign inst12__rst = rst;
-
-  assign inst13__rst = rst;
-
-  assign inst14__rst = rst;
-
   assign inst2__I[0] = rst;
-
-  assign inst14__side_0_track_0_in[0:0] = side_0_track_0_in[0:0];
-
-  assign inst11__track_0_in = side_0_track_0_in[0];
-
-  assign side_0_track_0_out[0:0] = inst14__side_0_track_0_out[0:0];
-
-  assign inst11__track_0_out = inst14__side_0_track_0_out[0];
-
-  assign inst14__side_0_track_1_in[0:0] = side_0_track_1_in[0:0];
-
-  assign inst11__track_1_in = side_0_track_1_in[0];
-
-  assign side_0_track_1_out[0:0] = inst14__side_0_track_1_out[0:0];
-
-  assign inst11__track_1_out = inst14__side_0_track_1_out[0];
-
-  assign inst14__side_0_track_2_in[0:0] = side_0_track_2_in[0:0];
-
-  assign inst11__track_2_in = side_0_track_2_in[0];
-
-  assign side_0_track_2_out[0:0] = inst14__side_0_track_2_out[0:0];
-
-  assign inst11__track_2_out = inst14__side_0_track_2_out[0];
-
-  assign inst14__side_0_track_3_in[0:0] = side_0_track_3_in[0:0];
-
-  assign inst11__track_3_in = side_0_track_3_in[0];
-
-  assign side_0_track_3_out[0:0] = inst14__side_0_track_3_out[0:0];
-
-  assign inst11__track_3_out = inst14__side_0_track_3_out[0];
-
-  assign inst12__config_en = inst8__O[0];
-
-  assign inst13__operand1[0:0] = inst12__out[0:0];
-
-  assign inst14__side_1_track_0_in[0:0] = side_1_track_0_in[0:0];
-
-  assign inst12__track_0_in = side_1_track_0_in[0];
-
-  assign side_1_track_0_out[0:0] = inst14__side_1_track_0_out[0:0];
-
-  assign inst12__track_0_out = inst14__side_1_track_0_out[0];
-
-  assign inst14__side_1_track_1_in[0:0] = side_1_track_1_in[0:0];
-
-  assign inst12__track_1_in = side_1_track_1_in[0];
-
-  assign side_1_track_1_out[0:0] = inst14__side_1_track_1_out[0:0];
-
-  assign inst12__track_1_out = inst14__side_1_track_1_out[0];
-
-  assign inst14__side_1_track_2_in[0:0] = side_1_track_2_in[0:0];
-
-  assign inst12__track_2_in = side_1_track_2_in[0];
-
-  assign side_1_track_2_out[0:0] = inst14__side_1_track_2_out[0:0];
-
-  assign inst12__track_2_out = inst14__side_1_track_2_out[0];
-
-  assign inst14__side_1_track_3_in[0:0] = side_1_track_3_in[0:0];
-
-  assign inst12__track_3_in = side_1_track_3_in[0];
-
-  assign side_1_track_3_out[0:0] = inst14__side_1_track_3_out[0:0];
-
-  assign inst12__track_3_out = inst14__side_1_track_3_out[0];
-
-  assign inst13__config_en = inst9__O[0];
-
-  assign inst14__clb_result[0:0] = inst13__result[0:0];
-
-  assign inst14__side_2_track_0_in[0:0] = side_2_track_0_in[0:0];
-
-  assign side_2_track_0_out[0:0] = inst14__side_2_track_0_out[0:0];
-
-  assign inst14__side_2_track_1_in[0:0] = side_2_track_1_in[0:0];
-
-  assign side_2_track_1_out[0:0] = inst14__side_2_track_1_out[0:0];
-
-  assign inst14__side_2_track_2_in[0:0] = side_2_track_2_in[0:0];
-
-  assign side_2_track_2_out[0:0] = inst14__side_2_track_2_out[0:0];
-
-  assign inst14__side_2_track_3_in[0:0] = side_2_track_3_in[0:0];
-
-  assign side_2_track_3_out[0:0] = inst14__side_2_track_3_out[0:0];
-
-  assign inst14__side_3_track_0_in[0:0] = side_3_track_0_in[0:0];
-
-  assign side_3_track_0_out[0:0] = inst14__side_3_track_0_out[0:0];
-
-  assign inst14__side_3_track_1_in[0:0] = side_3_track_1_in[0:0];
-
-  assign side_3_track_1_out[0:0] = inst14__side_3_track_1_out[0:0];
-
-  assign inst14__side_3_track_2_in[0:0] = side_3_track_2_in[0:0];
-
-  assign side_3_track_2_out[0:0] = inst14__side_3_track_2_out[0:0];
-
-  assign inst14__side_3_track_3_in[0:0] = side_3_track_3_in[0:0];
-
-  assign side_3_track_3_out[0:0] = inst14__side_3_track_3_out[0:0];
 
   assign inst3__I1[0] = config_addr[16];
 
@@ -2713,7 +2579,141 @@ module pe_tile (
 
   assign inst8__I0[0] = inst4__O;
 
+  assign inst1__I0[5] = config_addr[5];
+
+  assign inst1__I0[6] = config_addr[6];
+
+  assign inst1__I0[7] = config_addr[7];
+
+  assign inst1__I0[8] = config_addr[8];
+
+  assign inst1__I0[9] = config_addr[9];
+
+  assign inst1__I1[15:0] = tile_id[15:0];
+
+  assign inst10__I0[0] = inst6__O;
+
+  assign inst14__config_en = inst10__O[0];
+
+  assign inst11__config_en = inst7__O[0];
+
+  assign inst13__operand0[0:0] = inst11__out[0:0];
+
+  assign inst11__rst = rst;
+
+  assign inst12__rst = rst;
+
+  assign inst13__rst = rst;
+
+  assign inst14__rst = rst;
+
+  assign inst14__side_0_track_0_in[0:0] = side_0_track_0_in[0:0];
+
+  assign inst11__track_0_in = side_0_track_0_in[0];
+
+  assign side_0_track_0_out[0:0] = inst14__side_0_track_0_out[0:0];
+
+  assign inst11__track_0_out = inst14__side_0_track_0_out[0];
+
+  assign inst14__side_0_track_1_in[0:0] = side_0_track_1_in[0:0];
+
+  assign inst11__track_1_in = side_0_track_1_in[0];
+
+  assign side_0_track_1_out[0:0] = inst14__side_0_track_1_out[0:0];
+
+  assign inst11__track_1_out = inst14__side_0_track_1_out[0];
+
+  assign inst14__side_0_track_2_in[0:0] = side_0_track_2_in[0:0];
+
+  assign inst11__track_2_in = side_0_track_2_in[0];
+
+  assign side_0_track_2_out[0:0] = inst14__side_0_track_2_out[0:0];
+
+  assign inst11__track_2_out = inst14__side_0_track_2_out[0];
+
+  assign inst14__side_0_track_3_in[0:0] = side_0_track_3_in[0:0];
+
+  assign inst11__track_3_in = side_0_track_3_in[0];
+
+  assign side_0_track_3_out[0:0] = inst14__side_0_track_3_out[0:0];
+
+  assign inst11__track_3_out = inst14__side_0_track_3_out[0];
+
+  assign inst12__config_en = inst8__O[0];
+
+  assign inst13__operand1[0:0] = inst12__out[0:0];
+
+  assign inst14__side_1_track_0_in[0:0] = side_1_track_0_in[0:0];
+
+  assign inst12__track_0_in = side_1_track_0_in[0];
+
+  assign side_1_track_0_out[0:0] = inst14__side_1_track_0_out[0:0];
+
+  assign inst12__track_0_out = inst14__side_1_track_0_out[0];
+
+  assign inst14__side_1_track_1_in[0:0] = side_1_track_1_in[0:0];
+
+  assign inst12__track_1_in = side_1_track_1_in[0];
+
+  assign side_1_track_1_out[0:0] = inst14__side_1_track_1_out[0:0];
+
+  assign inst12__track_1_out = inst14__side_1_track_1_out[0];
+
+  assign inst14__side_1_track_2_in[0:0] = side_1_track_2_in[0:0];
+
+  assign inst12__track_2_in = side_1_track_2_in[0];
+
+  assign side_1_track_2_out[0:0] = inst14__side_1_track_2_out[0:0];
+
+  assign inst12__track_2_out = inst14__side_1_track_2_out[0];
+
+  assign inst14__side_1_track_3_in[0:0] = side_1_track_3_in[0:0];
+
+  assign inst12__track_3_in = side_1_track_3_in[0];
+
+  assign side_1_track_3_out[0:0] = inst14__side_1_track_3_out[0:0];
+
+  assign inst12__track_3_out = inst14__side_1_track_3_out[0];
+
+  assign inst13__config_en = inst9__O[0];
+
+  assign inst14__clb_result[0:0] = inst13__result[0:0];
+
+  assign inst14__side_2_track_0_in[0:0] = side_2_track_0_in[0:0];
+
+  assign side_2_track_0_out[0:0] = inst14__side_2_track_0_out[0:0];
+
+  assign inst14__side_2_track_1_in[0:0] = side_2_track_1_in[0:0];
+
+  assign side_2_track_1_out[0:0] = inst14__side_2_track_1_out[0:0];
+
+  assign inst14__side_2_track_2_in[0:0] = side_2_track_2_in[0:0];
+
+  assign side_2_track_2_out[0:0] = inst14__side_2_track_2_out[0:0];
+
+  assign inst14__side_2_track_3_in[0:0] = side_2_track_3_in[0:0];
+
+  assign side_2_track_3_out[0:0] = inst14__side_2_track_3_out[0:0];
+
+  assign inst14__side_3_track_0_in[0:0] = side_3_track_0_in[0:0];
+
+  assign side_3_track_0_out[0:0] = inst14__side_3_track_0_out[0:0];
+
+  assign inst14__side_3_track_1_in[0:0] = side_3_track_1_in[0:0];
+
+  assign side_3_track_1_out[0:0] = inst14__side_3_track_1_out[0:0];
+
+  assign inst14__side_3_track_2_in[0:0] = side_3_track_2_in[0:0];
+
+  assign side_3_track_2_out[0:0] = inst14__side_3_track_2_out[0:0];
+
+  assign inst14__side_3_track_3_in[0:0] = side_3_track_3_in[0:0];
+
+  assign side_3_track_3_out[0:0] = inst14__side_3_track_3_out[0:0];
+
   assign inst9__I0[0] = inst5__O;
+
+  assign inst1__I0[4] = config_addr[4];
 
 
 

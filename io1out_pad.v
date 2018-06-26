@@ -1,17 +1,19 @@
 /* verilator lint_off UNOPTFLAT */
-module coreir_not #(parameter width=1) (
+module coreir_eq #(parameter width=1) (
 
-  input [width-1:0] in,
+  input [width-1:0] in0,
 
-  output [width-1:0] out
+  input [width-1:0] in1,
+
+  output out
 
 );
 
-  assign out = ~in;
+  assign out = in0 == in1;
 
 
 
-endmodule //coreir_not
+endmodule //coreir_eq
 
 // End of module
 
@@ -35,85 +37,35 @@ endmodule //coreir_mux
 
 // End of module
 
-module Invert1_wrapped (
+module _Mux2 (
 
-  input [0:0] I,
+  input [1:0] I,
 
-  output [0:0] O
+  output  O,
 
-);
-
-  //Wire declarations for instance 'inst0' (Module coreir_not)
-
-  wire [0:0] inst0__in;
-
-  wire [0:0] inst0__out;
-
-  coreir_not #(.width(1)) inst0(
-
-    .in(inst0__in),
-
-    .out(inst0__out)
-
-  );
-
-
-
-  //All the connections
-
-  assign inst0__in[0:0] = I[0:0];
-
-  assign O[0:0] = inst0__out[0:0];
-
-
-
-endmodule //Invert1_wrapped
-
-// End of module
-
-module coreir_eq #(parameter width=1) (
-
-  input [width-1:0] in0,
-
-  input [width-1:0] in1,
-
-  output out
+  input  S
 
 );
 
-  assign out = in0 == in1;
+  //Wire declarations for instance 'inst0' (Module corebit_mux)
 
+  wire  inst0__in0;
 
-
-endmodule //coreir_eq
-
-// End of module
-
-module EQ16 (
-
-  input [15:0] I0,
-
-  input [15:0] I1,
-
-  output  O
-
-);
-
-  //Wire declarations for instance 'inst0' (Module coreir_eq)
-
-  wire [15:0] inst0__in0;
-
-  wire [15:0] inst0__in1;
+  wire  inst0__in1;
 
   wire  inst0__out;
 
-  coreir_eq #(.width(16)) inst0(
+  wire  inst0__sel;
+
+  corebit_mux inst0(
 
     .in0(inst0__in0),
 
     .in1(inst0__in1),
 
-    .out(inst0__out)
+    .out(inst0__out),
+
+    .sel(inst0__sel)
 
   );
 
@@ -121,15 +73,17 @@ module EQ16 (
 
   //All the connections
 
-  assign inst0__in0[15:0] = I0[15:0];
+  assign inst0__in0 = I[0];
 
-  assign inst0__in1[15:0] = I1[15:0];
+  assign inst0__in1 = I[1];
 
   assign O = inst0__out;
 
+  assign inst0__sel = S;
 
 
-endmodule //EQ16
+
+endmodule //_Mux2
 
 // End of module
 
@@ -223,11 +177,11 @@ module reg_U0 #(parameter init=1) (
 
   assign out[0:0] = reg0__out[0:0];
 
+  assign enMux__in0[0:0] = reg0__out[0:0];
+
   assign reg0__clk = clk;
 
   assign reg0__in[0:0] = enMux__out[0:0];
-
-  assign enMux__in0[0:0] = reg0__out[0:0];
 
   assign enMux__sel = en;
 
@@ -239,35 +193,41 @@ endmodule //reg_U0
 
 // End of module
 
-module _Mux2 (
+module coreir_not #(parameter width=1) (
 
-  input [1:0] I,
+  input [width-1:0] in,
 
-  output  O,
-
-  input  S
+  output [width-1:0] out
 
 );
 
-  //Wire declarations for instance 'inst0' (Module corebit_mux)
+  assign out = ~in;
 
-  wire  inst0__in0;
 
-  wire  inst0__in1;
 
-  wire  inst0__out;
+endmodule //coreir_not
 
-  wire  inst0__sel;
+// End of module
 
-  corebit_mux inst0(
+module Invert1_wrapped (
 
-    .in0(inst0__in0),
+  input [0:0] I,
 
-    .in1(inst0__in1),
+  output [0:0] O
 
-    .out(inst0__out),
+);
 
-    .sel(inst0__sel)
+  //Wire declarations for instance 'inst0' (Module coreir_not)
+
+  wire [0:0] inst0__in;
+
+  wire [0:0] inst0__out;
+
+  coreir_not #(.width(1)) inst0(
+
+    .in(inst0__in),
+
+    .out(inst0__out)
 
   );
 
@@ -275,17 +235,13 @@ module _Mux2 (
 
   //All the connections
 
-  assign inst0__in0 = I[0];
+  assign inst0__in[0:0] = I[0:0];
 
-  assign inst0__in1 = I[1];
-
-  assign O = inst0__out;
-
-  assign inst0__sel = S;
+  assign O[0:0] = inst0__out[0:0];
 
 
 
-endmodule //_Mux2
+endmodule //Invert1_wrapped
 
 // End of module
 
@@ -1616,6 +1572,50 @@ module Register32CER (
 
 
 endmodule //Register32CER
+
+// End of module
+
+module EQ16 (
+
+  input [15:0] I0,
+
+  input [15:0] I1,
+
+  output  O
+
+);
+
+  //Wire declarations for instance 'inst0' (Module coreir_eq)
+
+  wire [15:0] inst0__in0;
+
+  wire [15:0] inst0__in1;
+
+  wire  inst0__out;
+
+  coreir_eq #(.width(16)) inst0(
+
+    .in0(inst0__in0),
+
+    .in1(inst0__in1),
+
+    .out(inst0__out)
+
+  );
+
+
+
+  //All the connections
+
+  assign inst0__in0[15:0] = I0[15:0];
+
+  assign inst0__in1[15:0] = I1[15:0];
+
+  assign O = inst0__out;
+
+
+
+endmodule //EQ16
 
 // End of module
 
