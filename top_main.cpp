@@ -441,7 +441,7 @@ int main() {
   cout << "Passed handwritten test" << endl;
   route_neg_test();
   cout << "Passed route neg and handwritten tests!" << endl;
-  generated_and_test();  
+  generated_and_test();
   
   cout << "$$$ top tests passed" << endl;
 }
