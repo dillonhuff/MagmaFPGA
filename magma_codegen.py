@@ -932,6 +932,7 @@ def create_top(N):
                 m.wire(out_tile.tile_id, m.uint(tile_id, 16))
                 m.wire(out_tile.config_addr, io.config_addr)
                 m.wire(out_tile.config_data, io.config_data)
+                m.wire(out_tile.top_pin[0], getattr(io, 'out_wire_' + str(i)))
                 tile_id += 1
 
             for row in range(0, N):
