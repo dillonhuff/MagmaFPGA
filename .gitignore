@@ -3,3 +3,10 @@
 generator_utils.pyc
 obj_dir/
 __pycache__/
+connect_box.v
+io1in_pad.v
+io1out_pad.v
+pe_tile.v
+switch_box.v
+top.v
+configurable_logic_block.v
