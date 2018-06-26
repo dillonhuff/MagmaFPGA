@@ -430,7 +430,7 @@ void generated_and_test() {
   POSEDGE(top->clk, top);
 
   assert(top->out_wire_1 == (top->in_wire_1 && top->in_wire_2));
-  
+
   delete top;
 }
 
@@ -439,9 +439,10 @@ int main() {
 
   handwritten_routing_test();
   cout << "Passed handwritten test" << endl;
+
   route_neg_test();
   cout << "Passed route neg and handwritten tests!" << endl;
+
   generated_and_test();
-  
   cout << "$$$ top tests passed" << endl;
 }
