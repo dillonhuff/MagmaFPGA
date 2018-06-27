@@ -75,6 +75,7 @@ def create_io1out_pad():
 
 @m.cache_definition
 def create_connect_box():
+    
     cb = m.DefineCircuit("connect_box",
                          "clk", m.In(m.Clock),
                          "rst", m.In(m.Reset),
@@ -124,7 +125,7 @@ def create_connect_box():
     return cb
 
 @m.cache_definition
-def create_clb():
+def create_clb(WireWidth):
     clb = m.DefineCircuit("configurable_logic_block",
                           "operand0", m.In(m.Bits(1)),
                           "operand1", m.In(m.Bits(1)),
@@ -493,7 +494,7 @@ def create_pe_tile():
     m.wire(config_cb1.O[0], cb1.config_en)
 
     # CLB
-    clb = create_clb()()
+    clb = create_clb(1)()
     m.wire(pe.clk, clb.clk)
     m.wire(pe.rst, clb.rst)
     m.wire(pe.config_data, clb.config_data)
