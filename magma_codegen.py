@@ -126,56 +126,70 @@ def create_connect_box():
 
 @m.cache_definition
 def create_clb(WireWidth):
-    clb = m.DefineCircuit("configurable_logic_block",
-                          "operand0", m.In(m.Bits(1)),
-                          "operand1", m.In(m.Bits(1)),
-                          "result", m.Out(m.Bits(1)),
-                          "clk", m.In(m.Clock),
-                          "rst", m.In(m.Reset),
-                          "config_data", m.In(m.Bits(32)),
-                          "config_en", m.In(m.Bit))
+    W = m.UInt(WireWidth)
 
-    # Configuration data
-    config_reg = mantle.Register(32, init=0, has_ce=True, has_reset=True)
-    #config_reg = mantle.Register(32, init=0, has_reset=True)
+    class CLB(m.Circuit):
+        name = 'configurable_logic_block'
+        IO = ["operand0", m.In(m.Bits(1)),
+              "operand1", m.In(m.Bits(1)),
+              "result", m.Out(m.Bits(1)),
+              "clk", m.In(m.Clock),
+              "rst", m.In(m.Reset),
+              "config_data", m.In(m.Bits(32)),
+              "config_en", m.In(m.Bit)]
 
-    m.wire(clb.config_data, config_reg.I)
-    m.wire(clb.clk, config_reg.CLK)
-    m.wire(clb.config_en, config_reg.CE)
+        @classmethod
+        def definition(io):
 
-    rst_inv = mantle.Invert(1)
-    m.wire(rst_inv.I[0], clb.rst)
-    m.wire(rst_inv.O[0], config_reg.RESET)
+            # clb = m.DefineCircuit("configurable_logic_block",
+            #                       "operand0", m.In(m.Bits(1)),
+            #                       "operand1", m.In(m.Bits(1)),
+            #                       "result", m.Out(m.Bits(1)),
+            #                       "clk", m.In(m.Clock),
+            #                       "rst", m.In(m.Reset),
+            #                       "config_data", m.In(m.Bits(32)),
+            #                       "config_en", m.In(m.Bit))
 
-    # Operations in CLB
-    and_op = mantle.And(2, 1)
-    m.wire(clb.operand0, and_op.I0)
-    m.wire(clb.operand1, and_op.I1)
+            # Configuration data
+            config_reg = mantle.Register(32, init=0, has_ce=True, has_reset=True)
+            #config_reg = mantle.Register(32, init=0, has_reset=True)
 
-    or_op = mantle.Or(2, 1)
-    m.wire(clb.operand0, or_op.I0)
-    m.wire(clb.operand1, or_op.I1)
+            m.wire(io.config_data, config_reg.I)
+            m.wire(io.clk, config_reg.CLK)
+            m.wire(io.config_en, config_reg.CE)
 
-    xor_op = mantle.XOr(2, 1)
-    m.wire(clb.operand0, xor_op.I0)
-    m.wire(clb.operand1, xor_op.I1)
+            rst_inv = mantle.Invert(1)
+            m.wire(rst_inv.I[0], io.rst)
+            m.wire(rst_inv.O[0], config_reg.RESET)
 
-    not_op = mantle.Invert(1)
-    m.wire(clb.operand0, not_op.I)
+            # Operations in CLB
+            and_op = mantle.And(2, 1)
+            m.wire(io.operand0, and_op.I0)
+            m.wire(io.operand1, and_op.I1)
+
+            or_op = mantle.Or(2, 1)
+            m.wire(io.operand0, or_op.I0)
+            m.wire(io.operand1, or_op.I1)
+
+            xor_op = mantle.XOr(2, 1)
+            m.wire(io.operand0, xor_op.I0)
+            m.wire(io.operand1, xor_op.I1)
+
+            not_op = mantle.Invert(1)
+            m.wire(io.operand0, not_op.I)
     
-    # Config mux
-    config_mux = mantle.Mux(height=4, width=1)
-    m.wire(config_mux.O, clb.result)
-    m.wire(config_mux.S, config_reg.O[0:2])
+            # Config mux
+            config_mux = mantle.Mux(height=4, width=1)
+            m.wire(config_mux.O, io.result)
+            m.wire(config_mux.S, config_reg.O[0:2])
     
-    m.wire(and_op.O, config_mux.I0)
-    m.wire(or_op.O, config_mux.I1)
-    m.wire(xor_op.O, config_mux.I2)
-    m.wire(not_op.O, config_mux.I3)
+            m.wire(and_op.O, config_mux.I0)
+            m.wire(or_op.O, config_mux.I1)
+            m.wire(xor_op.O, config_mux.I2)
+            m.wire(not_op.O, config_mux.I3)
 
-    m.EndDefine()
-
-    return clb
+    return CLB
+#    return clb
 
 @m.cache_definition
 def create_switch_box():
