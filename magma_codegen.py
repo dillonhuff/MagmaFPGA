@@ -76,24 +76,6 @@ def create_io1out_pad():
 @m.cache_definition
 def create_connect_box(WireWidth):
     W = m.UInt(WireWidth)
-    
-    # cb = m.DefineCircuit("connect_box",
-    #                      "clk", m.In(m.Clock),
-    #                      "rst", m.In(m.Reset),
-    #                      "config_data", m.In(m.Bits(32)),
-    #                      "config_en", m.In(m.Bit),
-
-    #                      "track_0_in", m.In(m.Bit),
-    #                      "track_1_in", m.In(m.Bit),
-    #                      "track_2_in", m.In(m.Bit),
-    #                      "track_3_in", m.In(m.Bit),
-
-    #                      "track_0_out", m.In(m.Bit),
-    #                      "track_1_out", m.In(m.Bit),
-    #                      "track_2_out", m.In(m.Bit),
-    #                      "track_3_out", m.In(m.Bit),
-                         
-    #                      "out", m.Out(m.Bits(1)))
 
     class ConnectBox(m.Circuit):
 
@@ -103,15 +85,15 @@ def create_connect_box(WireWidth):
               "rst", m.In(m.Reset),
               "config_data", m.In(m.Bits(32)),
               "config_en", m.In(m.Bit),
-              "track_0_in", m.In(m.Bit),
-              "track_1_in", m.In(m.Bit),
-              "track_2_in", m.In(m.Bit),
-              "track_3_in", m.In(m.Bit),
-              "track_0_out", m.In(m.Bit),
-              "track_1_out", m.In(m.Bit),
-              "track_2_out", m.In(m.Bit),
-              "track_3_out", m.In(m.Bit),
-              "out", m.Out(m.Bits(1))]
+              "track_0_in", m.In(m.Bits(WireWidth)),
+              "track_1_in", m.In(m.Bits(WireWidth)),
+              "track_2_in", m.In(m.Bits(WireWidth)),
+              "track_3_in", m.In(m.Bits(WireWidth)),
+              "track_0_out", m.In(m.Bits(WireWidth)),
+              "track_1_out", m.In(m.Bits(WireWidth)),
+              "track_2_out", m.In(m.Bits(WireWidth)),
+              "track_3_out", m.In(m.Bits(WireWidth)),
+              "out", m.Out(m.Bits(WireWidth))]
 
         @classmethod
         def definition(io):
@@ -131,18 +113,16 @@ def create_connect_box(WireWidth):
             m.wire(config_mux.O, io.out)
             m.wire(config_mux.S, config_reg.O[0:3])
     
-            m.wire(io.track_0_in, config_mux.I0[0])
-            m.wire(io.track_1_in, config_mux.I1[0])
-            m.wire(io.track_2_in, config_mux.I2[0])
-            m.wire(io.track_3_in, config_mux.I3[0])
+            m.wire(io.track_0_in, config_mux.I0)
+            m.wire(io.track_1_in, config_mux.I1)
+            m.wire(io.track_2_in, config_mux.I2)
+            m.wire(io.track_3_in, config_mux.I3)
 
-            m.wire(io.track_0_out, config_mux.I4[0])
-            m.wire(io.track_1_out, config_mux.I5[0])
-            m.wire(io.track_2_out, config_mux.I6[0])
-            m.wire(io.track_3_out, config_mux.I7[0])
+            m.wire(io.track_0_out, config_mux.I4)
+            m.wire(io.track_1_out, config_mux.I5)
+            m.wire(io.track_2_out, config_mux.I6)
+            m.wire(io.track_3_out, config_mux.I7)
 
-        #m.EndDefine()
-    
     return ConnectBox
 
 @m.cache_definition
@@ -151,9 +131,9 @@ def create_clb(WireWidth):
 
     class CLB(m.Circuit):
         name = 'configurable_logic_block'
-        IO = ["operand0", m.In(m.Bits(1)),
-              "operand1", m.In(m.Bits(1)),
-              "result", m.Out(m.Bits(1)),
+        IO = ["operand0", m.In(m.Bits(WireWidth)),
+              "operand1", m.In(m.Bits(WireWidth)),
+              "result", m.Out(m.Bits(WireWidth)),
               "clk", m.In(m.Clock),
               "rst", m.In(m.Reset),
               "config_data", m.In(m.Bits(32)),
@@ -426,27 +406,27 @@ def create_pe_tile():
                    getattr(sb, 'side_' + str(side) + '_track_' + str(track) + '_out'))
 
     # Wiring up CLB, SB and CBs
-    m.wire(pe.side_0_track_0_in[0], cb0.track_0_in)
-    m.wire(pe.side_0_track_1_in[0], cb0.track_1_in)
-    m.wire(pe.side_0_track_2_in[0], cb0.track_2_in)
-    m.wire(pe.side_0_track_3_in[0], cb0.track_3_in)
+    m.wire(pe.side_0_track_0_in, cb0.track_0_in)
+    m.wire(pe.side_0_track_1_in, cb0.track_1_in)
+    m.wire(pe.side_0_track_2_in, cb0.track_2_in)
+    m.wire(pe.side_0_track_3_in, cb0.track_3_in)
 
-    m.wire(sb.side_0_track_0_out[0], cb0.track_0_out)
-    m.wire(sb.side_0_track_1_out[0], cb0.track_1_out)
-    m.wire(sb.side_0_track_2_out[0], cb0.track_2_out)
-    m.wire(sb.side_0_track_3_out[0], cb0.track_3_out)
+    m.wire(sb.side_0_track_0_out, cb0.track_0_out)
+    m.wire(sb.side_0_track_1_out, cb0.track_1_out)
+    m.wire(sb.side_0_track_2_out, cb0.track_2_out)
+    m.wire(sb.side_0_track_3_out, cb0.track_3_out)
 
     m.wire(cb0.out, clb.operand0)
 
-    m.wire(pe.side_1_track_0_in[0], cb1.track_0_in)
-    m.wire(pe.side_1_track_1_in[0], cb1.track_1_in)
-    m.wire(pe.side_1_track_2_in[0], cb1.track_2_in)
-    m.wire(pe.side_1_track_3_in[0], cb1.track_3_in)
+    m.wire(pe.side_1_track_0_in, cb1.track_0_in)
+    m.wire(pe.side_1_track_1_in, cb1.track_1_in)
+    m.wire(pe.side_1_track_2_in, cb1.track_2_in)
+    m.wire(pe.side_1_track_3_in, cb1.track_3_in)
 
-    m.wire(sb.side_1_track_0_out[0], cb1.track_0_out)
-    m.wire(sb.side_1_track_1_out[0], cb1.track_1_out)
-    m.wire(sb.side_1_track_2_out[0], cb1.track_2_out)
-    m.wire(sb.side_1_track_3_out[0], cb1.track_3_out)
+    m.wire(sb.side_1_track_0_out, cb1.track_0_out)
+    m.wire(sb.side_1_track_1_out, cb1.track_1_out)
+    m.wire(sb.side_1_track_2_out, cb1.track_2_out)
+    m.wire(sb.side_1_track_3_out, cb1.track_3_out)
 
     m.wire(cb1.out, clb.operand1)
     
