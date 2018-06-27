@@ -182,88 +182,142 @@ def create_clb(WireWidth):
     return CLB
 
 @m.cache_definition
-def create_switch_box():
-    sb = m.DefineCircuit("switch_box",
-                         "clk", m.In(m.Clock),
-                         "rst", m.In(m.Reset),
-                         "config_data", m.In(m.Bits(32)),
-                         "config_en", m.In(m.Bit),
+def create_switch_box(WireWidth):
+    class SwitchBox(m.Circuit):
+        name = 'switch_box'
+        IO = ["clk", m.In(m.Clock),
+              "rst", m.In(m.Reset),
+              "config_data", m.In(m.Bits(32)),
+              "config_en", m.In(m.Bit),
 
-                         "side_0_track_0_in", m.In(m.Bits(1)),
-                         "side_0_track_1_in", m.In(m.Bits(1)),
-                         "side_0_track_2_in", m.In(m.Bits(1)),
-                         "side_0_track_3_in", m.In(m.Bits(1)),
+              "side_0_track_0_in", m.In(m.Bits(1)),
+              "side_0_track_1_in", m.In(m.Bits(1)),
+              "side_0_track_2_in", m.In(m.Bits(1)),
+              "side_0_track_3_in", m.In(m.Bits(1)),
 
-                         "side_1_track_0_in", m.In(m.Bits(1)),
-                         "side_1_track_1_in", m.In(m.Bits(1)),
-                         "side_1_track_2_in", m.In(m.Bits(1)),
-                         "side_1_track_3_in", m.In(m.Bits(1)),
+              "side_1_track_0_in", m.In(m.Bits(1)),
+              "side_1_track_1_in", m.In(m.Bits(1)),
+              "side_1_track_2_in", m.In(m.Bits(1)),
+              "side_1_track_3_in", m.In(m.Bits(1)),
 
-                         "side_2_track_0_in", m.In(m.Bits(1)),
-                         "side_2_track_1_in", m.In(m.Bits(1)),
-                         "side_2_track_2_in", m.In(m.Bits(1)),
-                         "side_2_track_3_in", m.In(m.Bits(1)),
+              "side_2_track_0_in", m.In(m.Bits(1)),
+              "side_2_track_1_in", m.In(m.Bits(1)),
+              "side_2_track_2_in", m.In(m.Bits(1)),
+              "side_2_track_3_in", m.In(m.Bits(1)),
 
-                         "side_3_track_0_in", m.In(m.Bits(1)),
-                         "side_3_track_1_in", m.In(m.Bits(1)),
-                         "side_3_track_2_in", m.In(m.Bits(1)),
-                         "side_3_track_3_in", m.In(m.Bits(1)),
+              "side_3_track_0_in", m.In(m.Bits(1)),
+              "side_3_track_1_in", m.In(m.Bits(1)),
+              "side_3_track_2_in", m.In(m.Bits(1)),
+              "side_3_track_3_in", m.In(m.Bits(1)),
 
-                         "clb_result", m.In(m.Bits(1)),
+              "clb_result", m.In(m.Bits(1)),
 
-                         "side_0_track_0_out", m.Out(m.Bits(1)),
-                         "side_0_track_1_out", m.Out(m.Bits(1)),
-                         "side_0_track_2_out", m.Out(m.Bits(1)),
-                         "side_0_track_3_out", m.Out(m.Bits(1)),
+              "side_0_track_0_out", m.Out(m.Bits(1)),
+              "side_0_track_1_out", m.Out(m.Bits(1)),
+              "side_0_track_2_out", m.Out(m.Bits(1)),
+              "side_0_track_3_out", m.Out(m.Bits(1)),
 
-                         "side_1_track_0_out", m.Out(m.Bits(1)),
-                         "side_1_track_1_out", m.Out(m.Bits(1)),
-                         "side_1_track_2_out", m.Out(m.Bits(1)),
-                         "side_1_track_3_out", m.Out(m.Bits(1)),
+              "side_1_track_0_out", m.Out(m.Bits(1)),
+              "side_1_track_1_out", m.Out(m.Bits(1)),
+              "side_1_track_2_out", m.Out(m.Bits(1)),
+              "side_1_track_3_out", m.Out(m.Bits(1)),
 
-                         "side_2_track_0_out", m.Out(m.Bits(1)),
-                         "side_2_track_1_out", m.Out(m.Bits(1)),
-                         "side_2_track_2_out", m.Out(m.Bits(1)),
-                         "side_2_track_3_out", m.Out(m.Bits(1)),
+              "side_2_track_0_out", m.Out(m.Bits(1)),
+              "side_2_track_1_out", m.Out(m.Bits(1)),
+              "side_2_track_2_out", m.Out(m.Bits(1)),
+              "side_2_track_3_out", m.Out(m.Bits(1)),
 
-                         "side_3_track_0_out", m.Out(m.Bits(1)),
-                         "side_3_track_1_out", m.Out(m.Bits(1)),
-                         "side_3_track_2_out", m.Out(m.Bits(1)),
-                         "side_3_track_3_out", m.Out(m.Bits(1))
-    )
+              "side_3_track_0_out", m.Out(m.Bits(1)),
+              "side_3_track_1_out", m.Out(m.Bits(1)),
+              "side_3_track_2_out", m.Out(m.Bits(1)),
+              "side_3_track_3_out", m.Out(m.Bits(1))]
 
-    # Configuration data
-    config_reg = mantle.Register(32, init=0, has_ce=True, has_reset=True)
 
-    m.wire(sb.config_data, config_reg.I)
-    m.wire(sb.clk, config_reg.CLK)
-    m.wire(sb.config_en, config_reg.CE)
+        @classmethod
+        def definition(io):
+            
+    # sb = m.DefineCircuit("switch_box",
+    #                      "clk", m.In(m.Clock),
+    #                      "rst", m.In(m.Reset),
+    #                      "config_data", m.In(m.Bits(32)),
+    #                      "config_en", m.In(m.Bit),
 
-    rst_inv = mantle.Invert(1)
-    m.wire(rst_inv.I[0], sb.rst)
-    m.wire(rst_inv.O[0], config_reg.RESET)
+    #                      "side_0_track_0_in", m.In(m.Bits(1)),
+    #                      "side_0_track_1_in", m.In(m.Bits(1)),
+    #                      "side_0_track_2_in", m.In(m.Bits(1)),
+    #                      "side_0_track_3_in", m.In(m.Bits(1)),
 
-    # switch muxes
+    #                      "side_1_track_0_in", m.In(m.Bits(1)),
+    #                      "side_1_track_1_in", m.In(m.Bits(1)),
+    #                      "side_1_track_2_in", m.In(m.Bits(1)),
+    #                      "side_1_track_3_in", m.In(m.Bits(1)),
 
-    config_offset = 0
-    for side in range(0, 4):
-        for track in range(0, 4):
-            switch_mux = mantle.Mux(height=4, width=1)
-            m.wire(switch_mux.O,
-                   getattr(sb, 'side_' + str(side) + '_track_' + str(track) + '_out'))
-            m.wire(switch_mux.S, config_reg.O[config_offset:(config_offset + 2)])
-            config_offset += 2
+    #                      "side_2_track_0_in", m.In(m.Bits(1)),
+    #                      "side_2_track_1_in", m.In(m.Bits(1)),
+    #                      "side_2_track_2_in", m.In(m.Bits(1)),
+    #                      "side_2_track_3_in", m.In(m.Bits(1)),
 
-            for in_side in range(0, 4):
-                if in_side == side:
-                    m.wire(getattr(switch_mux, "I" + str(in_side)), sb.clb_result)
-                else:
-                    m.wire(getattr(switch_mux, "I" + str(in_side)),
-                           getattr(sb, 'side_' + str(in_side) + '_track_' + str(track) + '_in'))
+    #                      "side_3_track_0_in", m.In(m.Bits(1)),
+    #                      "side_3_track_1_in", m.In(m.Bits(1)),
+    #                      "side_3_track_2_in", m.In(m.Bits(1)),
+    #                      "side_3_track_3_in", m.In(m.Bits(1)),
 
-    m.EndDefine()
+    #                      "clb_result", m.In(m.Bits(1)),
+
+    #                      "side_0_track_0_out", m.Out(m.Bits(1)),
+    #                      "side_0_track_1_out", m.Out(m.Bits(1)),
+    #                      "side_0_track_2_out", m.Out(m.Bits(1)),
+    #                      "side_0_track_3_out", m.Out(m.Bits(1)),
+
+    #                      "side_1_track_0_out", m.Out(m.Bits(1)),
+    #                      "side_1_track_1_out", m.Out(m.Bits(1)),
+    #                      "side_1_track_2_out", m.Out(m.Bits(1)),
+    #                      "side_1_track_3_out", m.Out(m.Bits(1)),
+
+    #                      "side_2_track_0_out", m.Out(m.Bits(1)),
+    #                      "side_2_track_1_out", m.Out(m.Bits(1)),
+    #                      "side_2_track_2_out", m.Out(m.Bits(1)),
+    #                      "side_2_track_3_out", m.Out(m.Bits(1)),
+
+    #                      "side_3_track_0_out", m.Out(m.Bits(1)),
+    #                      "side_3_track_1_out", m.Out(m.Bits(1)),
+    #                      "side_3_track_2_out", m.Out(m.Bits(1)),
+    #                      "side_3_track_3_out", m.Out(m.Bits(1))
+    # )
+
+            # Configuration data
+            config_reg = mantle.Register(32, init=0, has_ce=True, has_reset=True)
+
+            m.wire(io.config_data, config_reg.I)
+            m.wire(io.clk, config_reg.CLK)
+            m.wire(io.config_en, config_reg.CE)
+            
+            rst_inv = mantle.Invert(1)
+            m.wire(rst_inv.I[0], io.rst)
+            m.wire(rst_inv.O[0], config_reg.RESET)
+
+            # switch muxes
+
+            config_offset = 0
+            for side in range(0, 4):
+                for track in range(0, 4):
+                    switch_mux = mantle.Mux(height=4, width=1)
+                    m.wire(switch_mux.O,
+                           getattr(io, 'side_' + str(side) + '_track_' + str(track) + '_out'))
+                    m.wire(switch_mux.S, config_reg.O[config_offset:(config_offset + 2)])
+                    config_offset += 2
+
+                    for in_side in range(0, 4):
+                        if in_side == side:
+                            m.wire(getattr(switch_mux, "I" + str(in_side)), io.clb_result)
+                        else:
+                            m.wire(getattr(switch_mux, "I" + str(in_side)),
+                                   getattr(io, 'side_' + str(in_side) + '_track_' + str(track) + '_in'))
+
+    #m.EndDefine()
     
-    return sb
+    #return sb
+    return SwitchBox
 
 @m.cache_definition
 def create_pe_tile():
@@ -387,7 +441,7 @@ def create_pe_tile():
     m.wire(config_clb.O[0], clb.config_en)
 
     # Switch box
-    sb = create_switch_box()()
+    sb = create_switch_box(1)()
     m.wire(pe.clk, sb.clk)
     m.wire(pe.rst, sb.rst)
     m.wire(pe.config_data, sb.config_data)
