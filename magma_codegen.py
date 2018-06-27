@@ -74,55 +74,76 @@ def create_io1out_pad():
     return cb
 
 @m.cache_definition
-def create_connect_box():
+def create_connect_box(WireWidth):
+    W = m.UInt(WireWidth)
     
-    cb = m.DefineCircuit("connect_box",
-                         "clk", m.In(m.Clock),
-                         "rst", m.In(m.Reset),
-                         "config_data", m.In(m.Bits(32)),
-                         "config_en", m.In(m.Bit),
+    # cb = m.DefineCircuit("connect_box",
+    #                      "clk", m.In(m.Clock),
+    #                      "rst", m.In(m.Reset),
+    #                      "config_data", m.In(m.Bits(32)),
+    #                      "config_en", m.In(m.Bit),
 
-                         "track_0_in", m.In(m.Bit),
-                         "track_1_in", m.In(m.Bit),
-                         "track_2_in", m.In(m.Bit),
-                         "track_3_in", m.In(m.Bit),
+    #                      "track_0_in", m.In(m.Bit),
+    #                      "track_1_in", m.In(m.Bit),
+    #                      "track_2_in", m.In(m.Bit),
+    #                      "track_3_in", m.In(m.Bit),
 
-                         "track_0_out", m.In(m.Bit),
-                         "track_1_out", m.In(m.Bit),
-                         "track_2_out", m.In(m.Bit),
-                         "track_3_out", m.In(m.Bit),
+    #                      "track_0_out", m.In(m.Bit),
+    #                      "track_1_out", m.In(m.Bit),
+    #                      "track_2_out", m.In(m.Bit),
+    #                      "track_3_out", m.In(m.Bit),
                          
-                         "out", m.Out(m.Bits(1)))
+    #                      "out", m.Out(m.Bits(1)))
 
-    # Configuration data
-    config_reg = mantle.Register(32, init=0, has_ce=True, has_reset=True)
+    class ConnectBox(m.Circuit):
 
-    m.wire(cb.config_data, config_reg.I)
-    m.wire(cb.clk, config_reg.CLK)
-    m.wire(cb.config_en, config_reg.CE)
+        name = 'connect_box'
 
-    rst_inv = mantle.Invert(1)
-    m.wire(rst_inv.I[0], cb.rst)
-    m.wire(rst_inv.O[0], config_reg.RESET)
+        IO = ["clk", m.In(m.Clock),
+              "rst", m.In(m.Reset),
+              "config_data", m.In(m.Bits(32)),
+              "config_en", m.In(m.Bit),
+              "track_0_in", m.In(m.Bit),
+              "track_1_in", m.In(m.Bit),
+              "track_2_in", m.In(m.Bit),
+              "track_3_in", m.In(m.Bit),
+              "track_0_out", m.In(m.Bit),
+              "track_1_out", m.In(m.Bit),
+              "track_2_out", m.In(m.Bit),
+              "track_3_out", m.In(m.Bit),
+              "out", m.Out(m.Bits(1))]
 
-    # Config mux
-    config_mux = mantle.Mux(height=8, width=1)
-    m.wire(config_mux.O, cb.out)
-    m.wire(config_mux.S, config_reg.O[0:3])
+        @classmethod
+        def definition(io):
+            # Configuration data
+            config_reg = mantle.Register(32, init=0, has_ce=True, has_reset=True)
+
+            m.wire(io.config_data, config_reg.I)
+            m.wire(io.clk, config_reg.CLK)
+            m.wire(io.config_en, config_reg.CE)
+
+            rst_inv = mantle.Invert(1)
+            m.wire(rst_inv.I[0], io.rst)
+            m.wire(rst_inv.O[0], config_reg.RESET)
+
+            # Config mux
+            config_mux = mantle.Mux(height=8, width=1)
+            m.wire(config_mux.O, io.out)
+            m.wire(config_mux.S, config_reg.O[0:3])
     
-    m.wire(cb.track_0_in, config_mux.I0[0])
-    m.wire(cb.track_1_in, config_mux.I1[0])
-    m.wire(cb.track_2_in, config_mux.I2[0])
-    m.wire(cb.track_3_in, config_mux.I3[0])
+            m.wire(io.track_0_in, config_mux.I0[0])
+            m.wire(io.track_1_in, config_mux.I1[0])
+            m.wire(io.track_2_in, config_mux.I2[0])
+            m.wire(io.track_3_in, config_mux.I3[0])
 
-    m.wire(cb.track_0_out, config_mux.I4[0])
-    m.wire(cb.track_1_out, config_mux.I5[0])
-    m.wire(cb.track_2_out, config_mux.I6[0])
-    m.wire(cb.track_3_out, config_mux.I7[0])
+            m.wire(io.track_0_out, config_mux.I4[0])
+            m.wire(io.track_1_out, config_mux.I5[0])
+            m.wire(io.track_2_out, config_mux.I6[0])
+            m.wire(io.track_3_out, config_mux.I7[0])
 
-    m.EndDefine()
+        #m.EndDefine()
     
-    return cb
+    return ConnectBox
 
 @m.cache_definition
 def create_clb(WireWidth):
@@ -365,14 +386,14 @@ def create_pe_tile():
     # Add ands!
 
     # # CB0
-    cb0 = create_connect_box()()
+    cb0 = create_connect_box(1)()
     m.wire(pe.clk, cb0.clk)
     m.wire(pe.rst, cb0.rst)
     m.wire(pe.config_data, cb0.config_data)
     m.wire(config_cb0.O[0], cb0.config_en)
 
     # CB1
-    cb1 = create_connect_box()()
+    cb1 = create_connect_box(1)()
     m.wire(pe.clk, cb1.clk)
     m.wire(pe.rst, cb1.rst)
     m.wire(pe.config_data, cb1.config_data)
