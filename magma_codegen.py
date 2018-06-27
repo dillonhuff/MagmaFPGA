@@ -394,45 +394,55 @@ def create_pe_tile():
 
     m.wire(clb.result, sb.clb_result)
 
-    m.wire(pe.side_0_track_0_in, sb.side_0_track_0_in)
-    m.wire(pe.side_0_track_1_in, sb.side_0_track_1_in)
-    m.wire(pe.side_0_track_2_in, sb.side_0_track_2_in)
-    m.wire(pe.side_0_track_3_in, sb.side_0_track_3_in)
+    for side in range(0, 4):
+        for track in range(0, 4):
+            m.wire(getattr(pe, 'side_' + str(side) + '_track_' + str(track) + '_in'),
+                   getattr(sb, 'side_' + str(side) + '_track_' + str(track) + '_in'))
 
-    m.wire(pe.side_1_track_0_in, sb.side_1_track_0_in)
-    m.wire(pe.side_1_track_1_in, sb.side_1_track_1_in)
-    m.wire(pe.side_1_track_2_in, sb.side_1_track_2_in)
-    m.wire(pe.side_1_track_3_in, sb.side_1_track_3_in)
+    for side in range(0, 4):
+        for track in range(0, 4):
+            m.wire(getattr(pe, 'side_' + str(side) + '_track_' + str(track) + '_out'),
+                   getattr(sb, 'side_' + str(side) + '_track_' + str(track) + '_out'))
 
-    m.wire(pe.side_2_track_0_in, sb.side_2_track_0_in)
-    m.wire(pe.side_2_track_1_in, sb.side_2_track_1_in)
-    m.wire(pe.side_2_track_2_in, sb.side_2_track_2_in)
-    m.wire(pe.side_2_track_3_in, sb.side_2_track_3_in)
+    # m.wire(pe.side_0_track_0_in, sb.side_0_track_0_in)
+    # m.wire(pe.side_0_track_1_in, sb.side_0_track_1_in)
+    # m.wire(pe.side_0_track_2_in, sb.side_0_track_2_in)
+    # m.wire(pe.side_0_track_3_in, sb.side_0_track_3_in)
+
+    # m.wire(pe.side_1_track_0_in, sb.side_1_track_0_in)
+    # m.wire(pe.side_1_track_1_in, sb.side_1_track_1_in)
+    # m.wire(pe.side_1_track_2_in, sb.side_1_track_2_in)
+    # m.wire(pe.side_1_track_3_in, sb.side_1_track_3_in)
+
+    # m.wire(pe.side_2_track_0_in, sb.side_2_track_0_in)
+    # m.wire(pe.side_2_track_1_in, sb.side_2_track_1_in)
+    # m.wire(pe.side_2_track_2_in, sb.side_2_track_2_in)
+    # m.wire(pe.side_2_track_3_in, sb.side_2_track_3_in)
     
-    m.wire(pe.side_3_track_0_in, sb.side_3_track_0_in)
-    m.wire(pe.side_3_track_1_in, sb.side_3_track_1_in)
-    m.wire(pe.side_3_track_2_in, sb.side_3_track_2_in)
-    m.wire(pe.side_3_track_3_in, sb.side_3_track_3_in)
+    # m.wire(pe.side_3_track_0_in, sb.side_3_track_0_in)
+    # m.wire(pe.side_3_track_1_in, sb.side_3_track_1_in)
+    # m.wire(pe.side_3_track_2_in, sb.side_3_track_2_in)
+    # m.wire(pe.side_3_track_3_in, sb.side_3_track_3_in)
 
-    m.wire(pe.side_0_track_0_out, sb.side_0_track_0_out)
-    m.wire(pe.side_0_track_1_out, sb.side_0_track_1_out)
-    m.wire(pe.side_0_track_2_out, sb.side_0_track_2_out)
-    m.wire(pe.side_0_track_3_out, sb.side_0_track_3_out)
+    # m.wire(pe.side_0_track_0_out, sb.side_0_track_0_out)
+    # m.wire(pe.side_0_track_1_out, sb.side_0_track_1_out)
+    # m.wire(pe.side_0_track_2_out, sb.side_0_track_2_out)
+    # m.wire(pe.side_0_track_3_out, sb.side_0_track_3_out)
 
-    m.wire(pe.side_1_track_0_out, sb.side_1_track_0_out)
-    m.wire(pe.side_1_track_1_out, sb.side_1_track_1_out)
-    m.wire(pe.side_1_track_2_out, sb.side_1_track_2_out)
-    m.wire(pe.side_1_track_3_out, sb.side_1_track_3_out)
+    # m.wire(pe.side_1_track_0_out, sb.side_1_track_0_out)
+    # m.wire(pe.side_1_track_1_out, sb.side_1_track_1_out)
+    # m.wire(pe.side_1_track_2_out, sb.side_1_track_2_out)
+    # m.wire(pe.side_1_track_3_out, sb.side_1_track_3_out)
 
-    m.wire(pe.side_2_track_0_out, sb.side_2_track_0_out)
-    m.wire(pe.side_2_track_1_out, sb.side_2_track_1_out)
-    m.wire(pe.side_2_track_2_out, sb.side_2_track_2_out)
-    m.wire(pe.side_2_track_3_out, sb.side_2_track_3_out)
+    # m.wire(pe.side_2_track_0_out, sb.side_2_track_0_out)
+    # m.wire(pe.side_2_track_1_out, sb.side_2_track_1_out)
+    # m.wire(pe.side_2_track_2_out, sb.side_2_track_2_out)
+    # m.wire(pe.side_2_track_3_out, sb.side_2_track_3_out)
     
-    m.wire(pe.side_3_track_0_out, sb.side_3_track_0_out)
-    m.wire(pe.side_3_track_1_out, sb.side_3_track_1_out)
-    m.wire(pe.side_3_track_2_out, sb.side_3_track_2_out)
-    m.wire(pe.side_3_track_3_out, sb.side_3_track_3_out)
+    # m.wire(pe.side_3_track_0_out, sb.side_3_track_0_out)
+    # m.wire(pe.side_3_track_1_out, sb.side_3_track_1_out)
+    # m.wire(pe.side_3_track_2_out, sb.side_3_track_2_out)
+    # m.wire(pe.side_3_track_3_out, sb.side_3_track_3_out)
     
     # Wiring up CLB, SB and CBs
     m.wire(pe.side_0_track_0_in[0], cb0.track_0_in)
