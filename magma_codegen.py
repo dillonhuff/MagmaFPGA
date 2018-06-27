@@ -261,17 +261,21 @@ def create_switch_box():
             
     # side 0
 
-    for track in range(0, 4):
-        switch_mux = mantle.Mux(height=4, width=1)
-        m.wire(switch_mux.O, getattr(sb, 'side_0_track_' + str(track) + '_out'))
-        m.wire(switch_mux.S, config_reg.O[0:2])
+    config_offset = 0
+    for side in range(0, 2):
+        for track in range(0, 4):
+            switch_mux = mantle.Mux(height=4, width=1)
+            m.wire(switch_mux.O, getattr(sb, 'side_' + str(side) + '_track_' + str(track) + '_out'))
+            #m.wire(switch_mux.S, config_reg.O[0:2])
+            m.wire(switch_mux.S, config_reg.O[config_offset:(config_offset + 2)])
+            config_offset += 2
 
-        for in_side in range(0, 4):
-            if in_side == 0:
-                m.wire(getattr(switch_mux, "I" + str(in_side)), sb.clb_result)
-            else:
-                m.wire(getattr(switch_mux, "I" + str(in_side)),
-                       getattr(sb, 'side_' + str(in_side) + '_track_' + str(track) + '_in'))
+            for in_side in range(0, 4):
+                if in_side == side:
+                    m.wire(getattr(switch_mux, "I" + str(in_side)), sb.clb_result)
+                else:
+                    m.wire(getattr(switch_mux, "I" + str(in_side)),
+                           getattr(sb, 'side_' + str(in_side) + '_track_' + str(track) + '_in'))
 
     # m.wire(switch_mux.I0, sb.clb_result)
     # m.wire(switch_mux.I1, sb.side_1_track_0_in)
@@ -302,38 +306,38 @@ def create_switch_box():
     # m.wire(switch_mux.I2, sb.side_2_track_3_in)
     # m.wire(switch_mux.I3, sb.side_3_track_3_in)
 
-    # side 1
-    switch_mux = mantle.Mux(height=4, width=1)
-    m.wire(switch_mux.O, sb.side_1_track_0_out)
-    m.wire(switch_mux.S, config_reg.O[8:10])
-    m.wire(switch_mux.I0, sb.side_0_track_0_in)
-    m.wire(switch_mux.I1, sb.clb_result)
-    m.wire(switch_mux.I2, sb.side_2_track_0_in)
-    m.wire(switch_mux.I3, sb.side_3_track_0_in)
+    # # side 1
+    # switch_mux = mantle.Mux(height=4, width=1)
+    # m.wire(switch_mux.O, sb.side_1_track_0_out)
+    # m.wire(switch_mux.S, config_reg.O[8:10])
+    # m.wire(switch_mux.I0, sb.side_0_track_0_in)
+    # m.wire(switch_mux.I1, sb.clb_result)
+    # m.wire(switch_mux.I2, sb.side_2_track_0_in)
+    # m.wire(switch_mux.I3, sb.side_3_track_0_in)
 
-    switch_mux = mantle.Mux(height=4, width=1)
-    m.wire(switch_mux.O, sb.side_1_track_1_out)
-    m.wire(switch_mux.S, config_reg.O[10:12])
-    m.wire(switch_mux.I0, sb.side_0_track_1_in)
-    m.wire(switch_mux.I1, sb.clb_result)
-    m.wire(switch_mux.I2, sb.side_2_track_1_in)
-    m.wire(switch_mux.I3, sb.side_3_track_1_in)
+    # switch_mux = mantle.Mux(height=4, width=1)
+    # m.wire(switch_mux.O, sb.side_1_track_1_out)
+    # m.wire(switch_mux.S, config_reg.O[10:12])
+    # m.wire(switch_mux.I0, sb.side_0_track_1_in)
+    # m.wire(switch_mux.I1, sb.clb_result)
+    # m.wire(switch_mux.I2, sb.side_2_track_1_in)
+    # m.wire(switch_mux.I3, sb.side_3_track_1_in)
 
-    switch_mux = mantle.Mux(height=4, width=1)
-    m.wire(switch_mux.O, sb.side_1_track_2_out)
-    m.wire(switch_mux.S, config_reg.O[12:14])
-    m.wire(switch_mux.I0, sb.side_0_track_2_in)
-    m.wire(switch_mux.I1, sb.clb_result)
-    m.wire(switch_mux.I2, sb.side_2_track_2_in)
-    m.wire(switch_mux.I3, sb.side_3_track_2_in)
+    # switch_mux = mantle.Mux(height=4, width=1)
+    # m.wire(switch_mux.O, sb.side_1_track_2_out)
+    # m.wire(switch_mux.S, config_reg.O[12:14])
+    # m.wire(switch_mux.I0, sb.side_0_track_2_in)
+    # m.wire(switch_mux.I1, sb.clb_result)
+    # m.wire(switch_mux.I2, sb.side_2_track_2_in)
+    # m.wire(switch_mux.I3, sb.side_3_track_2_in)
 
-    switch_mux = mantle.Mux(height=4, width=1)
-    m.wire(switch_mux.O, sb.side_1_track_3_out)
-    m.wire(switch_mux.S, config_reg.O[14:16])
-    m.wire(switch_mux.I0, sb.side_0_track_3_in)
-    m.wire(switch_mux.I1, sb.clb_result)
-    m.wire(switch_mux.I2, sb.side_2_track_3_in)
-    m.wire(switch_mux.I3, sb.side_3_track_3_in)
+    # switch_mux = mantle.Mux(height=4, width=1)
+    # m.wire(switch_mux.O, sb.side_1_track_3_out)
+    # m.wire(switch_mux.S, config_reg.O[14:16])
+    # m.wire(switch_mux.I0, sb.side_0_track_3_in)
+    # m.wire(switch_mux.I1, sb.clb_result)
+    # m.wire(switch_mux.I2, sb.side_2_track_3_in)
+    # m.wire(switch_mux.I3, sb.side_3_track_3_in)
 
     # side 2
     switch_mux = mantle.Mux(height=4, width=1)
