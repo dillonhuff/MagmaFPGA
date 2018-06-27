@@ -199,47 +199,6 @@ def create_switch_box(WireWidth):
                 IO.append('side_' + str(side) + '_track_' + str(track) + '_out')
                 IO.append(m.Out(m.Bits(WireWidth)))
 
-              # "side_0_track_0_in", m.In(m.Bits(WireWidth)),
-              # "side_0_track_1_in", m.In(m.Bits(WireWidth)),
-              # "side_0_track_2_in", m.In(m.Bits(WireWidth)),
-              # "side_0_track_3_in", m.In(m.Bits(WireWidth)),
-
-              # "side_1_track_0_in", m.In(m.Bits(WireWidth)),
-              # "side_1_track_1_in", m.In(m.Bits(WireWidth)),
-              # "side_1_track_2_in", m.In(m.Bits(WireWidth)),
-              # "side_1_track_3_in", m.In(m.Bits(WireWidth)),
-
-              # "side_2_track_0_in", m.In(m.Bits(WireWidth)),
-              # "side_2_track_1_in", m.In(m.Bits(WireWidth)),
-              # "side_2_track_2_in", m.In(m.Bits(WireWidth)),
-              # "side_2_track_3_in", m.In(m.Bits(WireWidth)),
-
-              # "side_3_track_0_in", m.In(m.Bits(WireWidth)),
-              # "side_3_track_1_in", m.In(m.Bits(WireWidth)),
-              # "side_3_track_2_in", m.In(m.Bits(WireWidth)),
-              # "side_3_track_3_in", m.In(m.Bits(WireWidth)),
-
-              # "side_0_track_0_out", m.Out(m.Bits(WireWidth)),
-              # "side_0_track_1_out", m.Out(m.Bits(WireWidth)),
-              # "side_0_track_2_out", m.Out(m.Bits(WireWidth)),
-              # "side_0_track_3_out", m.Out(m.Bits(WireWidth)),
-
-              # "side_1_track_0_out", m.Out(m.Bits(WireWidth)),
-              # "side_1_track_1_out", m.Out(m.Bits(WireWidth)),
-              # "side_1_track_2_out", m.Out(m.Bits(WireWidth)),
-              # "side_1_track_3_out", m.Out(m.Bits(WireWidth)),
-
-              # "side_2_track_0_out", m.Out(m.Bits(WireWidth)),
-              # "side_2_track_1_out", m.Out(m.Bits(WireWidth)),
-              # "side_2_track_2_out", m.Out(m.Bits(WireWidth)),
-              # "side_2_track_3_out", m.Out(m.Bits(WireWidth)),
-
-              # "side_3_track_0_out", m.Out(m.Bits(WireWidth)),
-              # "side_3_track_1_out", m.Out(m.Bits(WireWidth)),
-              # "side_3_track_2_out", m.Out(m.Bits(WireWidth)),
-              # "side_3_track_3_out", m.Out(m.Bits(WireWidth))]
-
-
         @classmethod
         def definition(io):
             # Configuration data
